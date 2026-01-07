@@ -262,6 +262,10 @@ h1 {
   gap: 1rem;
 }
 
+.join-form.is-disabled {
+  display: none;
+}
+
 input {
   border-radius: 14px;
   border: 1px solid var(--border);
