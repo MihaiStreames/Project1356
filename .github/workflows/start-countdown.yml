@@ -55,8 +55,9 @@ jobs:
             }
             if (!committed) {
               console.log("Countdown already started. No changes made.");
-              return;
+              process.exit(0);
             }
             console.log("Countdown started:", new Date(now).toISOString());
+            process.exit(0);
           });
           NODE

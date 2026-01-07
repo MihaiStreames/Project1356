@@ -69,7 +69,7 @@ function updateNumber(element, newValue, key) {
 function tick(startTimestamp) {
   if (!startTimestamp) {
     progressFill.style.width = "0%";
-    progressText.textContent = "0.00%";
+    progressText.textContent = "0.00000000%";
     daysEl.textContent = "0000";
     hoursEl.textContent = "00";
     minutesEl.textContent = "00";
@@ -83,8 +83,8 @@ function tick(startTimestamp) {
   const elapsed = now - startTimestamp;
   const progress = clamp01(elapsed / TOTAL_MS);
 
-  progressFill.style.width = `${(progress * 100).toFixed(2)}%`;
-  progressText.textContent = `${(progress * 100).toFixed(2)}%`;
+  progressFill.style.width = `${(progress * 100).toFixed(8)}%`;
+  progressText.textContent = `${(progress * 100).toFixed(8)}%`;
 
   if (remaining <= 0) {
     statusEl.textContent = "Countdown complete";
@@ -93,7 +93,7 @@ function tick(startTimestamp) {
     updateNumber(minutesEl, "00", "minutes");
     updateNumber(secondsEl, "00", "seconds");
     progressFill.style.width = "100%";
-    progressText.textContent = "100.00%";
+    progressText.textContent = "100.00000000%";
     return;
   }
 
