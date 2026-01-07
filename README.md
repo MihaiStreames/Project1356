@@ -19,10 +19,6 @@ Visit the website to join the community countdown and see who else is participat
 3. **Don't tell anyone** what your specific goals are
 4. Every day counts
 
-## Links
-
-- Instagram: [@project.1356](https://www.instagram.com/project.1356/)
-
 ---
 
 *Every day counts.*
