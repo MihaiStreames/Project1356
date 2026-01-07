@@ -26,6 +26,7 @@ const secondsEl = document.getElementById("seconds");
 const statusEl = document.getElementById("status");
 const joinForm = document.getElementById("joinForm");
 const nameInput = document.getElementById("nameInput");
+const joinBtn = document.getElementById("joinBtn");
 const joinStatus = document.getElementById("joinStatus");
 const joinCount = document.getElementById("joinCount");
 const recentJoiners = document.getElementById("recentJoiners");
@@ -146,9 +147,19 @@ function getClientId() {
 }
 
 function disableJoinForm() {
+  joinForm.classList.add("is-disabled");
   joinBtn.disabled = true;
   nameInput.disabled = true;
   joinStatus.textContent = "You joined the countdown";
+  joinBtn.textContent = "Joined";
+}
+
+function enableJoinForm(message) {
+  joinForm.classList.remove("is-disabled");
+  joinBtn.disabled = false;
+  nameInput.disabled = false;
+  joinBtn.textContent = "Join";
+  if (message) joinStatus.textContent = message;
 }
 
 async function joinCountdown(name) {
@@ -158,7 +169,7 @@ async function joinCountdown(name) {
   // check if already joined
   const existing = await participantsRef.child(clientId).once("value");
   if (existing.val()) {
-    return false; // already joined
+    return "already"; // already joined
   }
 
   await participantsRef.child(clientId).set({
@@ -169,8 +180,7 @@ async function joinCountdown(name) {
   firebase
     .analytics?.()
     .logEvent("joined_countdown", { named: displayName !== "Anonymous" });
-  disableJoinForm();
-  return true;
+  return "joined";
 }
 
 // uses dom apis instead of innerhtml to prevent xss
@@ -233,13 +243,27 @@ participantsRef
 // Form handling & init
 // ─────────────────────────────────────────────────────────────
 
+let joinInFlight = false;
+
 joinForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+  if (joinInFlight) return;
+  joinInFlight = true;
+  disableJoinForm();
+  joinStatus.textContent = "Joining...";
   try {
-    await joinCountdown(nameInput.value.trim());
+    const result = await joinCountdown(nameInput.value.trim());
+    if (result === "already") {
+      disableJoinForm();
+      joinStatus.textContent = "You already joined";
+    } else {
+      disableJoinForm();
+    }
   } catch (err) {
     console.error("error joining:", err);
-    joinStatus.textContent = "Join failed, try again";
+    enableJoinForm("Join failed, try again");
+  } finally {
+    joinInFlight = false;
   }
 });
 
