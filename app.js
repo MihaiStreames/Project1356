@@ -24,10 +24,10 @@ const hoursEl = document.getElementById("hours");
 const minutesEl = document.getElementById("minutes");
 const secondsEl = document.getElementById("seconds");
 const statusEl = document.getElementById("status");
+const joinSection = document.querySelector(".join");
 const joinForm = document.getElementById("joinForm");
 const nameInput = document.getElementById("nameInput");
 const joinBtn = document.getElementById("joinBtn");
-const joinStatus = document.getElementById("joinStatus");
 const joinCount = document.getElementById("joinCount");
 const recentJoiners = document.getElementById("recentJoiners");
 
@@ -147,19 +147,19 @@ function getClientId() {
 }
 
 function disableJoinForm() {
+  joinSection.classList.add("is-joined");
   joinForm.classList.add("is-disabled");
   joinBtn.disabled = true;
   nameInput.disabled = true;
-  joinStatus.textContent = "You joined the countdown";
   joinBtn.textContent = "Joined";
 }
 
-function enableJoinForm(message) {
+function enableJoinForm() {
+  joinSection.classList.remove("is-joined");
   joinForm.classList.remove("is-disabled");
   joinBtn.disabled = false;
   nameInput.disabled = false;
   joinBtn.textContent = "Join";
-  if (message) joinStatus.textContent = message;
 }
 
 async function joinCountdown(name) {
@@ -197,7 +197,7 @@ function renderRecentJoiners(entries) {
 
   for (const entry of entries) {
     const li = document.createElement("li");
-    li.className = "join-item";
+    li.className = "join-item join-item-animate";
 
     const nameSpan = document.createElement("span");
     nameSpan.className = "join-name";
@@ -219,25 +219,20 @@ function renderRecentJoiners(entries) {
 participantsRef.on(
   "value",
   (snap) => {
-    const count = Object.keys(snap.val() || {}).length;
+    const data = snap.val() || {};
+    const count = Object.keys(data).length;
     joinCount.textContent = `${count} joined`;
+
+    const entries = [];
+    snap.forEach((child) => {
+      const val = child.val();
+      if (val && typeof val.joinedAt === "number") entries.push(val);
+    });
+    entries.sort((a, b) => a.joinedAt - b.joinedAt);
+    renderRecentJoiners(entries.slice(-5).reverse());
   },
   (err) => console.error("participants count error:", err)
 );
-
-participantsRef
-  .orderByChild("joinedAt")
-  .limitToLast(5)
-  .on(
-    "value",
-    (snap) => {
-      const entries = [];
-      snap.forEach((child) => entries.push(child.val()));
-      entries.reverse(); // most recent first
-      renderRecentJoiners(entries);
-    },
-    (err) => console.error("recent joiners error:", err)
-  );
 
 // ─────────────────────────────────────────────────────────────
 // Form handling & init
@@ -250,18 +245,14 @@ joinForm.addEventListener("submit", async (e) => {
   if (joinInFlight) return;
   joinInFlight = true;
   disableJoinForm();
-  joinStatus.textContent = "Joining...";
+
   try {
     const result = await joinCountdown(nameInput.value.trim());
-    if (result === "already") {
-      disableJoinForm();
-      joinStatus.textContent = "You already joined";
-    } else {
-      disableJoinForm();
-    }
+    if (result === "already") disableJoinForm();
+    else disableJoinForm();
   } catch (err) {
     console.error("error joining:", err);
-    enableJoinForm("Join failed, try again");
+    enableJoinForm();
   } finally {
     joinInFlight = false;
   }

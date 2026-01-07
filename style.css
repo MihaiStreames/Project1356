@@ -17,6 +17,11 @@
   --progress-bg: rgba(255, 255, 255, 0.08);
   --progress-fill: linear-gradient(90deg, #ffd166, #ef476f);
   --shadow: 0 30px 80px rgba(6, 3, 24, 0.35);
+  --control-height: 48px;
+  --control-pad-y: 0.85rem;
+  --control-pad-x: 1rem;
+  --panel-pad-y: 1.75rem;
+  --panel-pad-x: 1.75rem;
 }
 
 body {
@@ -142,7 +147,7 @@ h1 {
 .progress-block {
   background: var(--panel);
   border-radius: 24px;
-  padding: 1.75rem 2rem;
+  padding: var(--panel-pad-y) var(--panel-pad-x);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
   -webkit-backdrop-filter: blur(18px);
@@ -187,7 +192,7 @@ h1 {
   gap: 1rem;
   background: var(--panel);
   border-radius: 24px;
-  padding: 1.75rem 2rem;
+  padding: var(--panel-pad-y) var(--panel-pad-x);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
   -webkit-backdrop-filter: blur(18px);
@@ -242,9 +247,14 @@ h1 {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 24px;
-  padding: 2rem;
+  padding: var(--panel-pad-y) var(--panel-pad-x);
   display: grid;
   gap: 1.5rem;
+  transition: gap 240ms ease;
+}
+
+.join.is-joined {
+  gap: 0;
 }
 
 .join-copy h2 {
@@ -256,20 +266,39 @@ h1 {
   color: var(--text-muted);
 }
 
+.join-copy {
+  max-height: 200px;
+  overflow: hidden;
+  transition: opacity 240ms ease, max-height 240ms ease;
+}
+
 .join-form {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 1rem;
+  max-height: 160px;
+  overflow: hidden;
+  transition: opacity 240ms ease, max-height 240ms ease;
 }
 
 .join-form.is-disabled {
-  display: none;
+  opacity: 0;
+  max-height: 0;
+  pointer-events: none;
+}
+
+.join.is-joined .join-copy,
+.join.is-joined .join-form {
+  opacity: 0;
+  max-height: 0;
+  pointer-events: none;
 }
 
 input {
   border-radius: 14px;
   border: 1px solid var(--border);
-  padding: 0.85rem 1rem;
+  padding: var(--control-pad-y) var(--control-pad-x);
+  min-height: var(--control-height);
   background: rgba(0, 0, 0, 0.3);
   color: var(--text-primary);
   font-size: 1rem;
@@ -287,16 +316,21 @@ input::placeholder {
   background: rgba(0, 0, 0, 0.4);
 }
 
-.join-meta {
-  display: flex;
-  justify-content: space-between;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
 .join-recent {
   border-top: 1px solid var(--border);
   padding-top: 1rem;
+}
+
+.join.is-joined .join-recent {
+  border-top: none;
+  padding-top: 0;
+}
+
+.join-recent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
 }
 
 .join-recent-title {
@@ -305,6 +339,14 @@ input::placeholder {
   letter-spacing: 0.15em;
   color: var(--text-muted);
   margin-bottom: 0.75rem;
+}
+
+.join-recent-header #joinCount {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
 }
 
 .join-list {
@@ -318,10 +360,26 @@ input::placeholder {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.6rem 0.8rem;
+  padding: var(--control-pad-y) var(--control-pad-x);
+  min-height: var(--control-height);
   background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
+  border-radius: 14px;
   font-size: 0.9rem;
+}
+
+.join-item-animate {
+  animation: join-slide 420ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+@keyframes join-slide {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .join-item.placeholder {
@@ -344,7 +402,8 @@ button {
   font-family: inherit;
   font-size: 1rem;
   font-weight: 600;
-  padding: 0.85rem 2.4rem;
+  padding: var(--control-pad-y) 2.4rem;
+  min-height: var(--control-height);
   border-radius: 14px;
   border: none;
   cursor: pointer;
@@ -426,9 +485,9 @@ button:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  .join-meta {
+  .join-recent-header {
+    align-items: flex-start;
     flex-direction: column;
-    gap: 0.5rem;
   }
 }
 
@@ -436,7 +495,8 @@ button:focus-visible {
   .wrap,
   .glow,
   .digits,
-  .progress-fill {
+  .progress-fill,
+  .join-item-animate {
     animation: none;
     transition: none;
   }
