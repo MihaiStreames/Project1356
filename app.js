@@ -25,6 +25,8 @@ let previousValues = {
   seconds: null,
 };
 
+let cachedStartTimestamp = null;
+
 function pad2(n) {
   return String(n).padStart(2, "0");
 }
@@ -104,15 +106,32 @@ function tick(startTimestamp) {
   updateNumber(secondsEl, pad2(seconds), "seconds");
 }
 
-countdownRef.on("value", (snapshot) => {
-  const data = snapshot.val();
-  tick(data ? data.startTimestamp : null);
-});
+countdownRef.on(
+  "value",
+  (snapshot) => {
+    const data = snapshot.val();
+    cachedStartTimestamp = data ? data.startTimestamp : null;
+    tick(cachedStartTimestamp);
+  },
+  (error) => {
+    console.error("Countdown listener error:", error);
+    statusEl.textContent = "Connection error";
+  }
+);
+
+// Local interval for smooth countdown updates (no Firebase calls)
+setInterval(() => {
+  tick(cachedStartTimestamp);
+}, 250);
 
 function getClientId() {
   const existing = localStorage.getItem("project1356-client-id");
   if (existing) return existing;
-  const created = `client_${Math.random().toString(36).slice(2, 10)}`;
+  const array = new Uint8Array(8);
+  crypto.getRandomValues(array);
+  const created = `client_${Array.from(array, (b) =>
+    b.toString(16).padStart(2, "0")
+  ).join("")}`;
   localStorage.setItem("project1356-client-id", created);
   return created;
 }
@@ -132,37 +151,65 @@ async function joinCountdown(name) {
   joinStatus.textContent = "You joined the countdown";
 }
 
-participantsRef.on("value", (snapshot) => {
-  const data = snapshot.val() || {};
-  const count = Object.keys(data).length;
-  joinCount.textContent = `${count} joined`;
-});
+participantsRef.on(
+  "value",
+  (snapshot) => {
+    const data = snapshot.val() || {};
+    const count = Object.keys(data).length;
+    joinCount.textContent = `${count} joined`;
+  },
+  (error) => {
+    console.error("Participants count error:", error);
+  }
+);
+
+function renderRecentJoiners(entries) {
+  recentJoiners.innerHTML = "";
+
+  if (entries.length === 0) {
+    const placeholder = document.createElement("li");
+    placeholder.className = "join-item placeholder";
+    placeholder.textContent = "Waiting for the first joiner...";
+    recentJoiners.appendChild(placeholder);
+    return;
+  }
+
+  entries.forEach((entry) => {
+    const li = document.createElement("li");
+    li.className = "join-item";
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "join-name";
+    nameSpan.textContent = entry.name || "Anonymous";
+
+    const timeSpan = document.createElement("span");
+    timeSpan.className = "join-time";
+    timeSpan.textContent = formatDate(entry.joinedAt);
+
+    li.appendChild(nameSpan);
+    li.appendChild(timeSpan);
+    recentJoiners.appendChild(li);
+  });
+}
 
 participantsRef
   .orderByChild("joinedAt")
   .limitToLast(5)
-  .on("value", (snapshot) => {
-    const entries = [];
-    snapshot.forEach((child) => {
-      entries.push(child.val());
-    });
-
-    if (entries.length === 0) {
-      recentJoiners.innerHTML =
-        '<li class="join-item placeholder">Waiting for the first joiner...</li>';
-      return;
+  .on(
+    "value",
+    (snapshot) => {
+      const entries = [];
+      snapshot.forEach((child) => {
+        entries.push(child.val());
+      });
+      // Reverse to show most recent first
+      entries.reverse();
+      renderRecentJoiners(entries);
+    },
+    (error) => {
+      console.error("Recent joiners error:", error);
     }
-
-    // Reverse to show most recent first
-    entries.reverse();
-    recentJoiners.innerHTML = entries
-      .map((entry) => {
-        const name = entry.name || "Anonymous";
-        const time = formatDate(entry.joinedAt);
-        return `<li class="join-item"><span class="join-name">${name}</span><span class="join-time">${time}</span></li>`;
-      })
-      .join("");
-  });
+  );
 
 joinForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -175,13 +222,6 @@ joinForm.addEventListener("submit", async (event) => {
   }
 });
 
-setInterval(() => {
-  countdownRef.once("value").then((snapshot) => {
-    const data = snapshot.val();
-    tick(data ? data.startTimestamp : null);
-  });
-}, 250);
-
 const clientId = getClientId();
 participantsRef
   .child(clientId)
@@ -190,4 +230,7 @@ participantsRef
     if (snapshot.val()) {
       joinStatus.textContent = "You joined the countdown";
     }
+  })
+  .catch((error) => {
+    console.error("Failed to check join status:", error);
   });
