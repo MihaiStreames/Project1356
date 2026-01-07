@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project 1356</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Space+Grotesk:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="ambient">
+      <div class="glow orb-one"></div>
+      <div class="glow orb-two"></div>
+      <div class="grid"></div>
+    </div>
+
+    <main class="wrap">
+      <header class="hero">
+        <p class="eyebrow">Global Countdown</p>
+        <h1>Project 1356</h1>
+      </header>
+
+      <section class="clock">
+        <div class="time-slab">
+          <div class="digits" id="days">0000</div>
+          <div class="label">Days</div>
+        </div>
+        <div class="divider">:</div>
+        <div class="time-slab">
+          <div class="digits" id="hours">00</div>
+          <div class="label">Hours</div>
+        </div>
+        <div class="divider">:</div>
+        <div class="time-slab">
+          <div class="digits" id="minutes">00</div>
+          <div class="label">Minutes</div>
+        </div>
+        <div class="divider">:</div>
+        <div class="time-slab">
+          <div class="digits" id="seconds">00</div>
+          <div class="label">Seconds</div>
+        </div>
+      </section>
+
+      <section class="progress-block">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-meta">
+          <span id="status">Waiting to start...</span>
+          <span id="progressText">0.00%</span>
+        </div>
+      </section>
+
+      <section class="join">
+        <div class="join-copy">
+          <h2>Join the countdown</h2>
+          <p>
+            Add your name to the timeline. Optional, but nice for the record.
+          </p>
+        </div>
+        <form class="join-form" id="joinForm">
+          <input
+            type="text"
+            id="nameInput"
+            maxlength="32"
+            placeholder="Name (optional)"
+          />
+          <button type="submit" id="joinBtn">Join</button>
+        </form>
+        <div class="join-meta">
+          <span id="joinStatus">Ready to join</span>
+          <span id="joinCount">0 joined</span>
+        </div>
+        <div class="join-last" id="lastJoin">Waiting for the first name</div>
+      </section>
+
+      <footer class="footer">MihaiStreames - 2026</footer>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

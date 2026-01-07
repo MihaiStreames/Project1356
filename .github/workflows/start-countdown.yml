@@ -1,0 +1,62 @@
+name: Start Countdown
+
+on:
+  workflow_dispatch:
+
+jobs:
+  start-countdown:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Firebase Admin
+        run: npm install firebase-admin@12
+
+      - name: Start countdown in RTDB
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+        run: |
+          node <<'NODE'
+          const admin = require("firebase-admin");
+
+          if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+            throw new Error("Missing FIREBASE_SERVICE_ACCOUNT secret.");
+          }
+          if (!process.env.FIREBASE_DATABASE_URL) {
+            throw new Error("Missing FIREBASE_DATABASE_URL secret.");
+          }
+
+          const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+          admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+            databaseURL: process.env.FIREBASE_DATABASE_URL,
+          });
+
+          const ref = admin.database().ref("countdown");
+          const now = Date.now();
+
+          ref.transaction((current) => {
+            if (current && current.startTimestamp) {
+              return;
+            }
+            return {
+              startTimestamp: now,
+              startedBy: "github-actions",
+              days: 1356,
+            };
+          }, (error, committed) => {
+            if (error) {
+              console.error("Failed to start countdown:", error);
+              process.exit(1);
+            }
+            if (!committed) {
+              console.log("Countdown already started. No changes made.");
+              return;
+            }
+            console.log("Countdown started:", new Date(now).toISOString());
+          });
+          NODE
