@@ -98,7 +98,7 @@ function tick(startTimestamp) {
     return;
   }
 
-  statusEl.textContent = "In Progress";
+  statusEl.textContent = "IN PROGRESS";
 
   const totalSeconds = Math.floor(remaining / 1000);
   const days = Math.floor(totalSeconds / 86400);

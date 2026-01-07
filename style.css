@@ -22,6 +22,12 @@
   --control-pad-x: 1rem;
   --panel-pad-y: 1.75rem;
   --panel-pad-x: 1.75rem;
+  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-md: 14px;
+  --text-micro-size: 0.8rem;
+  --text-micro-letter: 0.15em;
+  --text-micro-letter-tight: 0.12em;
 }
 
 body {
@@ -62,6 +68,7 @@ body {
   border-radius: 50%;
   filter: blur(80px);
   opacity: 0.5;
+  will-change: transform;
 }
 
 .orb-one {
@@ -131,31 +138,55 @@ body {
   gap: 0.5rem;
 }
 
-.eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.4em;
-  font-size: 0.7rem;
-  color: var(--text-muted);
-}
-
 h1 {
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 700;
   letter-spacing: -0.03em;
 }
 
-.progress-block {
+.eyebrow,
+.label,
+.footer a {
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.join-recent-title,
+.progress-meta-title {
+  font-size: var(--text-micro-size);
+  text-transform: uppercase;
+  letter-spacing: var(--text-micro-letter);
+  color: var(--text-muted);
+}
+
+.join-recent-header #joinCount,
+.progress-meta-count {
+  font-size: var(--text-micro-size);
+  text-transform: uppercase;
+  letter-spacing: var(--text-micro-letter-tight);
+  color: var(--text-muted);
+  white-space: nowrap;
+  justify-self: end;
+}
+
+.progress-block,
+.clock,
+.join {
   background: var(--panel);
-  border-radius: 24px;
-  padding: var(--panel-pad-y) var(--panel-pad-x);
   border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: var(--panel-pad-y) var(--panel-pad-x);
   box-shadow: var(--shadow);
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
 }
 
 @supports not (backdrop-filter: blur(1px)) {
-  .progress-block {
+  .progress-block,
+  .clock,
+  .join {
     background: rgba(20, 22, 35, 0.95);
   }
 }
@@ -178,11 +209,20 @@ h1 {
 }
 
 .progress-meta {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.9rem;
-  font-size: 0.95rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
   color: var(--text-muted);
+  min-width: 0;
+}
+
+.progress-meta-title {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .clock {
@@ -190,25 +230,12 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  background: var(--panel);
-  border-radius: 24px;
-  padding: var(--panel-pad-y) var(--panel-pad-x);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
-}
-
-@supports not (backdrop-filter: blur(1px)) {
-  .clock {
-    background: rgba(20, 22, 35, 0.95);
-  }
 }
 
 .time-slab {
   background: var(--panel-strong);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   padding: 1.25rem 1rem;
   flex: 1;
   text-align: center;
@@ -237,17 +264,9 @@ h1 {
 
 .label {
   margin-top: 0.6rem;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--text-muted);
 }
 
 .join {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: var(--panel-pad-y) var(--panel-pad-x);
   display: grid;
   gap: 1.5rem;
   transition: gap 240ms ease;
@@ -269,7 +288,6 @@ h1 {
 .join-copy {
   max-height: 200px;
   overflow: hidden;
-  transition: opacity 240ms ease, max-height 240ms ease;
 }
 
 .join-form {
@@ -277,13 +295,17 @@ h1 {
   grid-template-columns: 1fr auto;
   gap: 1rem;
   max-height: 160px;
-  overflow: hidden;
+}
+
+.join-copy,
+.join-form {
   transition: opacity 240ms ease, max-height 240ms ease;
 }
 
 .join-form.is-disabled {
   opacity: 0;
   max-height: 0;
+  overflow: hidden;
   pointer-events: none;
 }
 
@@ -295,7 +317,7 @@ h1 {
 }
 
 input {
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
   padding: var(--control-pad-y) var(--control-pad-x);
   min-height: var(--control-height);
@@ -327,25 +349,17 @@ input::placeholder {
 }
 
 .join-recent-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
-  gap: 1rem;
+  gap: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  min-width: 0;
 }
 
 .join-recent-title {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--text-muted);
-  margin-bottom: 0.75rem;
-}
-
-.join-recent-header #joinCount {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  margin-bottom: 0;
+  min-width: 0;
   white-space: nowrap;
 }
 
@@ -363,7 +377,7 @@ input::placeholder {
   padding: var(--control-pad-y) var(--control-pad-x);
   min-height: var(--control-height);
   background: rgba(0, 0, 0, 0.2);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   font-size: 0.9rem;
 }
 
@@ -395,16 +409,16 @@ input::placeholder {
 
 .join-time {
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: var(--text-micro-size);
 }
 
 button {
   font-family: inherit;
   font-size: 1rem;
   font-weight: 600;
-  padding: var(--control-pad-y) 2.4rem;
+  padding: var(--control-pad-y) var(--control-pad-x);
   min-height: var(--control-height);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -424,6 +438,11 @@ button {
   background: var(--accent-2);
   color: #02130d;
   box-shadow: 0 10px 20px rgba(6, 214, 160, 0.25);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
 }
 
 .join-form button:hover {
@@ -446,10 +465,6 @@ button:focus-visible {
 
 .footer {
   text-align: center;
-  color: var(--text-muted);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  font-size: 0.7rem;
 }
 
 .footer a {
@@ -463,10 +478,6 @@ button:focus-visible {
 }
 
 @media (max-width: 900px) {
-  .clock {
-    gap: 1rem;
-  }
-
   .divider {
     display: none;
   }
@@ -481,13 +492,69 @@ button:focus-visible {
     gap: 2rem;
   }
 
+  .glow {
+    width: 280px;
+    height: 280px;
+    filter: blur(60px);
+    opacity: 0.45;
+  }
+
+  .orb-one {
+    top: -140px;
+    left: -120px;
+  }
+
+  .orb-two {
+    bottom: -200px;
+    right: -120px;
+  }
+
+  .clock {
+    flex-wrap: wrap;
+  }
+
+  .time-slab {
+    flex: 1 1 45%;
+    min-width: 140px;
+  }
+
   .join-form {
     grid-template-columns: 1fr;
   }
 
-  .join-recent-header {
-    align-items: flex-start;
-    flex-direction: column;
+  .join-form button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  body {
+    padding: 1.2rem;
+  }
+
+  .clock,
+  .progress-block,
+  .join {
+    padding: 1.25rem;
+  }
+
+  .digits {
+    font-size: clamp(1.7rem, 8vw, 2.6rem);
+    letter-spacing: 0.05em;
+  }
+
+  .label {
+    letter-spacing: var(--text-micro-letter);
+  }
+
+  .time-slab {
+    padding: 1rem 0.75rem;
+    min-width: 120px;
+  }
+
+  .progress-meta {
+    gap: 0.5rem;
+    font-size: calc(var(--text-micro-size) + 0.05rem);
   }
 }
 
