@@ -16,7 +16,7 @@ const joinForm = document.getElementById("joinForm");
 const nameInput = document.getElementById("nameInput");
 const joinStatus = document.getElementById("joinStatus");
 const joinCount = document.getElementById("joinCount");
-const lastJoin = document.getElementById("lastJoin");
+const recentJoiners = document.getElementById("recentJoiners");
 
 let previousValues = {
   days: null,
@@ -140,22 +140,28 @@ participantsRef.on("value", (snapshot) => {
 
 participantsRef
   .orderByChild("joinedAt")
-  .limitToLast(1)
+  .limitToLast(5)
   .on("value", (snapshot) => {
-    let lastEntry = null;
+    const entries = [];
     snapshot.forEach((child) => {
-      lastEntry = child.val();
+      entries.push(child.val());
     });
 
-    if (!lastEntry || !lastEntry.joinedAt) {
-      lastJoin.textContent = "Waiting for the first name";
+    if (entries.length === 0) {
+      recentJoiners.innerHTML =
+        '<li class="join-item placeholder">Waiting for the first joiner...</li>';
       return;
     }
 
-    const name = lastEntry.name || "Anonymous";
-    lastJoin.textContent = `Last joined: ${name} at ${formatDate(
-      lastEntry.joinedAt
-    )}`;
+    // Reverse to show most recent first
+    entries.reverse();
+    recentJoiners.innerHTML = entries
+      .map((entry) => {
+        const name = entry.name || "Anonymous";
+        const time = formatDate(entry.joinedAt);
+        return `<li class="join-item"><span class="join-name">${name}</span><span class="join-time">${time}</span></li>`;
+      })
+      .join("");
   });
 
 joinForm.addEventListener("submit", async (event) => {
