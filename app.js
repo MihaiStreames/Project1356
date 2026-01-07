@@ -145,9 +145,21 @@ function getClientId() {
   return id;
 }
 
+function disableJoinForm() {
+  joinBtn.disabled = true;
+  nameInput.disabled = true;
+  joinStatus.textContent = "You joined the countdown";
+}
+
 async function joinCountdown(name) {
   const clientId = getClientId();
   const displayName = name || "Anonymous";
+
+  // check if already joined
+  const existing = await participantsRef.child(clientId).once("value");
+  if (existing.val()) {
+    return false; // already joined
+  }
 
   await participantsRef.child(clientId).set({
     name: displayName,
@@ -157,7 +169,8 @@ async function joinCountdown(name) {
   firebase
     .analytics?.()
     .logEvent("joined_countdown", { named: displayName !== "Anonymous" });
-  joinStatus.textContent = "You joined the countdown";
+  disableJoinForm();
+  return true;
 }
 
 // uses dom apis instead of innerhtml to prevent xss
@@ -236,6 +249,6 @@ participantsRef
   .child(clientId)
   .once("value")
   .then((snap) => {
-    if (snap.val()) joinStatus.textContent = "You joined the countdown";
+    if (snap.val()) disableJoinForm();
   })
   .catch((err) => console.error("failed to check join status:", err));
