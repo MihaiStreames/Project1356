@@ -1,6 +1,3 @@
 # IDEs
 .vscode/
 .idea/
-
-# Other
-firebase-config.js
