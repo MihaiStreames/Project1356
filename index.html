@@ -70,6 +70,7 @@
             id="nameInput"
             maxlength="32"
             placeholder="Name (optional)"
+            aria-label="Your name (optional)"
           />
           <button type="submit" id="joinBtn">Join</button>
         </form>
@@ -80,12 +81,21 @@
         <div class="join-recent">
           <p class="join-recent-title">Recent joiners</p>
           <ul class="join-list" id="recentJoiners">
-            <li class="join-item placeholder">Waiting for the first joiner...</li>
+            <li class="join-item placeholder">
+              Waiting for the first joiner...
+            </li>
           </ul>
         </div>
       </section>
 
-      <footer class="footer"><a href="https://github.com/MihaiStreames/Project1356" target="_blank" rel="noopener">MihaiStreames - 2026</a></footer>
+      <footer class="footer">
+        <a
+          href="https://github.com/MihaiStreames/Project1356"
+          target="_blank"
+          rel="noopener"
+          >MihaiStreames - 2026</a
+        >
+      </footer>
     </main>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
