@@ -1,9 +1,21 @@
+// ─────────────────────────────────────────────────────────────
+// Config
+// ─────────────────────────────────────────────────────────────
+
 const DAYS = 1356;
 const TOTAL_MS = DAYS * 24 * 60 * 60 * 1000;
+
+// ─────────────────────────────────────────────────────────────
+// Firebase refs
+// ─────────────────────────────────────────────────────────────
 
 const database = firebase.database();
 const countdownRef = database.ref("countdown");
 const participantsRef = database.ref("participants");
+
+// ─────────────────────────────────────────────────────────────
+// DOM elements
+// ─────────────────────────────────────────────────────────────
 
 const progressFill = document.getElementById("progressFill");
 const progressText = document.getElementById("progressText");
@@ -18,22 +30,15 @@ const joinStatus = document.getElementById("joinStatus");
 const joinCount = document.getElementById("joinCount");
 const recentJoiners = document.getElementById("recentJoiners");
 
-let previousValues = {
-  days: null,
-  hours: null,
-  minutes: null,
-  seconds: null,
-};
+// ─────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────
 
-let cachedStartTimestamp = null;
-
-function pad2(n) {
-  return String(n).padStart(2, "0");
-}
+const pad2 = (n) => String(n).padStart(2, "0");
+const clamp01 = (x) => Math.max(0, Math.min(1, x));
 
 function formatDate(timestamp) {
-  const date = new Date(timestamp);
-  return date.toLocaleString("en-US", {
+  return new Date(timestamp).toLocaleString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -44,20 +49,21 @@ function formatDate(timestamp) {
   });
 }
 
-function clamp01(x) {
-  return Math.max(0, Math.min(1, x));
-}
+// ─────────────────────────────────────────────────────────────
+// Countdown logic
+// ─────────────────────────────────────────────────────────────
+
+let cachedStartTimestamp = null;
+
+// tracks previous values to trigger css animation only on change
+let previousValues = { days: null, hours: null, minutes: null, seconds: null };
 
 function updateNumber(element, newValue, key) {
-  if (previousValues[key] !== newValue) {
-    element.classList.add("updating");
-    element.textContent = newValue;
-    previousValues[key] = newValue;
-
-    setTimeout(() => {
-      element.classList.remove("updating");
-    }, 400);
-  }
+  if (previousValues[key] === newValue) return;
+  element.classList.add("updating");
+  element.textContent = newValue;
+  previousValues[key] = newValue;
+  setTimeout(() => element.classList.remove("updating"), 400);
 }
 
 function tick(startTimestamp) {
@@ -72,12 +78,11 @@ function tick(startTimestamp) {
     return;
   }
 
-  const endTimestamp = startTimestamp + TOTAL_MS;
   const now = Date.now();
-  const remaining = endTimestamp - now;
+  const remaining = startTimestamp + TOTAL_MS - now;
   const elapsed = now - startTimestamp;
-
   const progress = clamp01(elapsed / TOTAL_MS);
+
   progressFill.style.width = `${(progress * 100).toFixed(2)}%`;
   progressText.textContent = `${(progress * 100).toFixed(2)}%`;
 
@@ -106,63 +111,56 @@ function tick(startTimestamp) {
   updateNumber(secondsEl, pad2(seconds), "seconds");
 }
 
+// realtime listener caches timestamp, local interval does the ticking
 countdownRef.on(
   "value",
-  (snapshot) => {
-    const data = snapshot.val();
-    cachedStartTimestamp = data ? data.startTimestamp : null;
+  (snap) => {
+    const data = snap.val();
+    cachedStartTimestamp = data?.startTimestamp ?? null;
     tick(cachedStartTimestamp);
   },
-  (error) => {
-    console.error("Countdown listener error:", error);
+  (err) => {
+    console.error("countdown listener error:", err);
     statusEl.textContent = "Connection error";
   }
 );
 
-// Local interval for smooth countdown updates (no Firebase calls)
-setInterval(() => {
-  tick(cachedStartTimestamp);
-}, 250);
+setInterval(() => tick(cachedStartTimestamp), 250);
 
+// ─────────────────────────────────────────────────────────────
+// Participant system
+// ─────────────────────────────────────────────────────────────
+
+// generates a persistent client id using crypto for better entropy
 function getClientId() {
-  const existing = localStorage.getItem("project1356-client-id");
-  if (existing) return existing;
-  const array = new Uint8Array(8);
-  crypto.getRandomValues(array);
-  const created = `client_${Array.from(array, (b) =>
+  const stored = localStorage.getItem("project1356-client-id");
+  if (stored) return stored;
+
+  const bytes = new Uint8Array(8);
+  crypto.getRandomValues(bytes);
+  const id = `client_${Array.from(bytes, (b) =>
     b.toString(16).padStart(2, "0")
   ).join("")}`;
-  localStorage.setItem("project1356-client-id", created);
-  return created;
+  localStorage.setItem("project1356-client-id", id);
+  return id;
 }
 
 async function joinCountdown(name) {
   const clientId = getClientId();
   const displayName = name || "Anonymous";
+
   await participantsRef.child(clientId).set({
     name: displayName,
     joinedAt: firebase.database.ServerValue.TIMESTAMP,
   });
-  if (firebase.analytics) {
-    firebase.analytics().logEvent("joined_countdown", {
-      named: displayName !== "Anonymous",
-    });
-  }
+
+  firebase
+    .analytics?.()
+    .logEvent("joined_countdown", { named: displayName !== "Anonymous" });
   joinStatus.textContent = "You joined the countdown";
 }
 
-participantsRef.on(
-  "value",
-  (snapshot) => {
-    const data = snapshot.val() || {};
-    const count = Object.keys(data).length;
-    joinCount.textContent = `${count} joined`;
-  },
-  (error) => {
-    console.error("Participants count error:", error);
-  }
-);
-
+// uses dom apis instead of innerhtml to prevent xss
 function renderRecentJoiners(entries) {
   recentJoiners.innerHTML = "";
 
@@ -174,7 +172,7 @@ function renderRecentJoiners(entries) {
     return;
   }
 
-  entries.forEach((entry) => {
+  for (const entry of entries) {
     const li = document.createElement("li");
     li.className = "join-item";
 
@@ -186,51 +184,58 @@ function renderRecentJoiners(entries) {
     timeSpan.className = "join-time";
     timeSpan.textContent = formatDate(entry.joinedAt);
 
-    li.appendChild(nameSpan);
-    li.appendChild(timeSpan);
+    li.append(nameSpan, timeSpan);
     recentJoiners.appendChild(li);
-  });
+  }
 }
+
+// ─────────────────────────────────────────────────────────────
+// Firebase listeners for participants
+// ─────────────────────────────────────────────────────────────
+
+participantsRef.on(
+  "value",
+  (snap) => {
+    const count = Object.keys(snap.val() || {}).length;
+    joinCount.textContent = `${count} joined`;
+  },
+  (err) => console.error("participants count error:", err)
+);
 
 participantsRef
   .orderByChild("joinedAt")
   .limitToLast(5)
   .on(
     "value",
-    (snapshot) => {
+    (snap) => {
       const entries = [];
-      snapshot.forEach((child) => {
-        entries.push(child.val());
-      });
-      // Reverse to show most recent first
-      entries.reverse();
+      snap.forEach((child) => entries.push(child.val()));
+      entries.reverse(); // most recent first
       renderRecentJoiners(entries);
     },
-    (error) => {
-      console.error("Recent joiners error:", error);
-    }
+    (err) => console.error("recent joiners error:", err)
   );
 
-joinForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const name = nameInput.value.trim();
+// ─────────────────────────────────────────────────────────────
+// Form handling & init
+// ─────────────────────────────────────────────────────────────
+
+joinForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
   try {
-    await joinCountdown(name);
-  } catch (error) {
-    console.error("Error joining countdown:", error);
+    await joinCountdown(nameInput.value.trim());
+  } catch (err) {
+    console.error("error joining:", err);
     joinStatus.textContent = "Join failed, try again";
   }
 });
 
+// check if user already joined on page load
 const clientId = getClientId();
 participantsRef
   .child(clientId)
   .once("value")
-  .then((snapshot) => {
-    if (snapshot.val()) {
-      joinStatus.textContent = "You joined the countdown";
-    }
+  .then((snap) => {
+    if (snap.val()) joinStatus.textContent = "You joined the countdown";
   })
-  .catch((error) => {
-    console.error("Failed to check join status:", error);
-  });
+  .catch((err) => console.error("failed to check join status:", err));
