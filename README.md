@@ -1,16 +1,24 @@
-# Project 1356 - Part 2
+# Project1356
 
-A community countdown website for [Project 1356](https://www.instagram.com/project.1356/).
+A community countdown website where participants commit to 6 life-changing goals over 1,356 days. Built with [SvelteKit](https://svelte.dev/docs/kit) and [Firebase](https://firebase.google.com/).
 
-## What is Project 1356?
+[![Countdown Started](https://img.shields.io/badge/Countdown-Started%20Jan%207%2C%202026-ffd166?style=modern&logo=firebase&logoColor=white)](https://mihaistreames.github.io/Project1356/)
+[![Deploy](https://github.com/MihaiStreames/Project1356/actions/workflows/deploy.yml/badge.svg)](https://github.com/MihaiStreames/Project1356/actions/workflows/deploy.yml)
+[![License](https://img.shields.io/github/license/MihaiStreames/Project1356)](LICENSE)
 
-Project 1356 is a 1,356-day countdown challenge. Set 6 life-changing goals and work toward them over 1,356 days. The rule: don't tell anyone what you're counting down to.
+Licensed under MIT.
 
-**Part 2 starts January 7th, 2026 and ends in 1,356 days.**
+## About
 
-## Join the Countdown
+Project 1356 is an [Instagram thing](https://www.instagram.com/project.1356/). I missed part 1 and did not want to miss part 2, so I built a site for it, quickly.
 
-Visit the website to join the community countdown and see who else is participating. Enter your name (or stay anonymous) to be part of the journey.
+I originally did it raw (pure HTML, JS, and CSS). GitHub Pages meant no backend server, so I wired it up to Firebase for storage and auth: my first time using it, picked it because it was free and it slotted straight into a static site.
+
+Later I rewrote the whole thing on SvelteKit, as a training project.
+
+Shame the guy who runs the Instagram account never showed the site to anyone, so it mostly ended up as a personal countdown with a community shape (shoutout to my friends who joined!).
+
+Live at [mihaistreames.github.io/Project1356](https://mihaistreames.github.io/Project1356/). Part 2 started January 7th, 2026.
 
 ## The Rules
 
@@ -19,6 +27,10 @@ Visit the website to join the community countdown and see who else is participat
 3. **Don't tell anyone** what your specific goals are
 4. Every day counts
 
----
+## License
 
-*Every day counts.*
+MIT. See [LICENSE](LICENSE).
+
+<div align="center">
+  Made with ❤️
+</div>

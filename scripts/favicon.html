@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 512px;
+        height: 512px;
+        overflow: hidden;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background: linear-gradient(160deg, #0b0c15, #11131f);
+        color: #f5f3ef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            circle at 30% 30%,
+            rgba(255, 209, 102, 0.35),
+            transparent 60%
+          ),
+          radial-gradient(
+            circle at 70% 70%,
+            rgba(6, 214, 160, 0.3),
+            transparent 60%
+          );
+        z-index: 0;
+      }
+
+      .content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+      }
+
+      .number {
+        font-size: 10rem;
+        font-weight: 700;
+        letter-spacing: -0.05em;
+        background: linear-gradient(135deg, #ffd166, #ef476f);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        line-height: 1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="content">
+      <div class="number">1356</div>
+    </div>
+  </body>
+</html>

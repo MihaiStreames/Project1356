@@ -1,0 +1,102 @@
+<script lang="ts">
+  const {
+    disabled,
+    onJoin,
+  }: {
+    disabled: boolean;
+    onJoin: (name: string) => Promise<void>;
+  } = $props();
+
+  let nameValue = $state("");
+  // guards against double-submit while the join request is in-flight
+  let joinInFlight = $state(false);
+
+  async function handleSubmit(e: Event): Promise<void> {
+    e.preventDefault();
+    if (joinInFlight) return;
+    joinInFlight = true;
+
+    try {
+      await onJoin(nameValue.trim());
+    } finally {
+      joinInFlight = false;
+    }
+  }
+</script>
+
+<form class="join-form" class:is-disabled={disabled} onsubmit={handleSubmit}>
+  <input
+    aria-label="Your name (optional)"
+    {disabled}
+    maxlength={32}
+    placeholder="Name (optional)"
+    type="text"
+    bind:value={nameValue}
+  />
+  <button {disabled} type="submit">{disabled ? "Joined" : "Join"}</button>
+</form>
+
+<style>
+  .join-form {
+    --input-focus-border: color-mix(in srgb, var(--accent) 60%, transparent);
+    --input-focus-ring: color-mix(in srgb, var(--accent) 15%, transparent);
+    --input-focus-bg: rgba(0, 0, 0, 0.4);
+    --submit-ink: #02130d;
+    --submit-shadow: 0 10px 20px
+      color-mix(in srgb, var(--accent-2) 25%, transparent);
+    --submit-shadow-hover: 0 12px 26px
+      color-mix(in srgb, var(--accent-2) 35%, transparent);
+
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    max-height: 160px;
+    transition:
+      opacity 240ms ease,
+      max-height 240ms ease;
+  }
+
+  .join-form.is-disabled {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .join-form input:focus {
+    outline: none;
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 0 3px var(--input-focus-ring);
+    background: var(--input-focus-bg);
+  }
+
+  .join-form button {
+    background: var(--accent-2);
+    color: var(--submit-ink);
+    box-shadow: var(--submit-shadow);
+    width: auto;
+  }
+
+  .join-form button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--submit-shadow-hover);
+  }
+
+  .join-form button:active {
+    transform: translateY(0);
+  }
+
+  .join-form button:focus-visible {
+    outline-color: var(--accent-2);
+  }
+
+  @media (max-width: 720px) {
+    .join-form {
+      grid-template-columns: 1fr;
+    }
+
+    .join-form button {
+      width: 100%;
+    }
+  }
+</style>
