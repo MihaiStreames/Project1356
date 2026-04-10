@@ -3,6 +3,7 @@
 <!-- PROJECT SHIELDS -->
 <div align="center">
 
+[![Countdown Started](https://img.shields.io/badge/Countdown-Started%20Jan%207%2C%202026-ffd166?style=flat&logo=firebase&logoColor=white)](https://mihaistreames.github.io/Project1356/)
 [![Deploy](https://github.com/MihaiStreames/Project1356/actions/workflows/deploy.yml/badge.svg)](https://github.com/MihaiStreames/Project1356/actions/workflows/deploy.yml)
 [![License](https://img.shields.io/github/license/MihaiStreames/Project1356?label=License)](LICENSE)
 
@@ -10,7 +11,7 @@
 
 <div align="center">
 
-  <h1>Project1356</h1>
+  <h1>Project 1356</h1>
 
   <h3 align="center">1,356 days. 6 life-changing goals.</h3>
 
@@ -27,15 +28,15 @@ Project 1356 is a 1,356-day countdown challenge. Set 6 life-changing goals and w
 
 Part 2 started January 7th, 2026.
 
-Visit the live countdown at [Project1356](https://mihaistreames.github.io/Project1356/).
+Visit the live countdown at [mihaistreames.github.io/Project1356](https://mihaistreames.github.io/Project1356/).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
 
 - [SvelteKit](https://svelte.dev/docs/kit)
+- [TypeScript](https://www.typescriptlang.org/)
 - [Firebase](https://firebase.google.com/)
-- [Bun](https://bun.sh/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
