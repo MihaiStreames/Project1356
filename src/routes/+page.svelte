@@ -16,7 +16,7 @@
 
 	let cachedStartTimestamp: number | null = $state(null);
 	let status = $state("Waiting to start...");
-	let progressWidth = $state("0%");
+	let progress = $state(0);
 	let progressText = $state("0.00000000%");
 	let days = $state("0000");
 	let hours = $state("00");
@@ -30,7 +30,7 @@
 	function tick(): void {
 		const startTimestamp = cachedStartTimestamp;
 		if (startTimestamp === null) {
-			progressWidth = "0%";
+			progress = 0;
 			progressText = "0.00000000%";
 			days = "0000";
 			hours = "00";
@@ -43,10 +43,10 @@
 		const now = Date.now();
 		const remaining = startTimestamp + TOTAL_MS - now;
 		const elapsed = now - startTimestamp;
-		const progress = clamp01(elapsed / TOTAL_MS);
+		const pct = clamp01(elapsed / TOTAL_MS);
 
-		progressWidth = `${(progress * 100).toFixed(8)}%`;
-		progressText = `${(progress * 100).toFixed(8)}%`;
+		progress = pct;
+		progressText = `${(pct * 100).toFixed(8)}%`;
 
 		if (remaining <= 0) {
 			status = "Countdown complete";
@@ -54,7 +54,7 @@
 			hours = "00";
 			minutes = "00";
 			seconds = "00";
-			progressWidth = "100%";
+			progress = 1;
 			progressText = "100.00000000%";
 			return;
 		}
@@ -110,7 +110,30 @@
 </script>
 
 <svelte:head>
-	<title>Project 1356</title>
+	<title>Project 1356 - Global Countdown</title>
+	<meta name="description" content="1,356 days. 6 life-changing goals. A global countdown for people committed to transforming their lives. Join the movement." />
+
+	<!-- open graph (facebook, discord, slack, etc.) -->
+	<meta content="website" property="og:type" />
+	<meta content="Project 1356 - Global Countdown" property="og:title" />
+	<meta content="1,356 days. 6 life-changing goals. Join the global countdown and commit to transforming your life." property="og:description" />
+	<meta content="https://mihaistreames.github.io/Project1356/" property="og:url" />
+	<meta content="https://mihaistreames.github.io/Project1356/og-image.png" property="og:image" />
+	<meta content="1200" property="og:image:width" />
+	<meta content="630" property="og:image:height" />
+	<meta content="Project 1356" property="og:site_name" />
+
+	<!-- twitter/x card -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="Project 1356 - Global Countdown" />
+	<meta name="twitter:description" content="1,356 days. 6 life-changing goals. Join the global countdown." />
+	<meta name="twitter:image" content="https://mihaistreames.github.io/Project1356/og-image.png" />
+
+	<!-- discord uses OG tags primarily, theme-color helps with embed accent -->
+	<meta name="theme-color" content="#ffd166" />
+
+	<!-- additional seo -->
+	<link href="https://mihaistreames.github.io/Project1356/" rel="canonical" />
 </svelte:head>
 
 <Ambient />
@@ -122,7 +145,7 @@
 	</header>
 
 	<Clock {days} {hours} {minutes} {seconds} />
-	<ProgressBar {status} text={progressText} width={progressWidth} />
+	<ProgressBar {progress} {status} text={progressText} />
 	<JoinSection />
 	<Footer />
 </main>

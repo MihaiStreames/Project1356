@@ -1,10 +1,10 @@
 <script lang="ts">
 	const {
-		width,
+		progress,
 		status,
 		text,
 	}: {
-		width: string;
+		progress: number;
 		status: string;
 		text: string;
 	} = $props();
@@ -12,7 +12,7 @@
 
 <section class="progress-block panel">
 	<div class="progress-bar">
-		<div style:width class="progress-fill"></div>
+		<div style:transform="scaleX({progress})" class="progress-fill"></div>
 	</div>
 	<div class="progress-meta">
 		<p class="progress-meta-title">{status}</p>
@@ -31,11 +31,14 @@
 
 	.progress-fill {
 		height: 100%;
-		width: 0%;
+		width: 100%;
 		background: var(--progress-fill);
 		border-radius: 999px;
-		transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+		transform-origin: left;
+		transform: scaleX(0);
+		transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 		box-shadow: 0 0 12px rgba(255, 209, 102, 0.4);
+		will-change: transform;
 	}
 
 	.progress-meta {
@@ -60,6 +63,7 @@
 	}
 
 	.progress-meta-count {
+		font-variant-numeric: tabular-nums;
 		font-size: var(--text-micro-size);
 		text-transform: uppercase;
 		letter-spacing: var(--text-micro-letter-tight);
