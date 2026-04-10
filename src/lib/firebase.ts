@@ -16,14 +16,14 @@ const firebaseConfig = {
 	measurementId: "G-VKZPKTSJHC",
 };
 
-/** Firebase app instance */
+/** Firebase application instance. */
 export const app = initializeApp(firebaseConfig);
-/** Firebase Realtime Database instance */
+/** Firebase Realtime Database instance. */
 export const database = getDatabase(app);
 
-/** Firebase Analytics instance, null during SSG */
+/** Firebase Analytics instance, null during static site generation. */
 export const analytics: Analytics | null = browser ? getAnalytics(app) : null;
-/** Firebase Database reference to the countdown node */
+/** Database reference to the countdown start timestamp. */
 export const countdownRef: DatabaseReference = ref(database, "countdown");
-/** Firebase Database reference to the participants node */
+/** Database reference to the participant entries. */
 export const participantsRef: DatabaseReference = ref(database, "participants");

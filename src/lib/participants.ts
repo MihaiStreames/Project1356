@@ -3,7 +3,15 @@ import { get, set, child, ref, serverTimestamp } from "firebase/database";
 import { logEvent } from "firebase/analytics";
 import { getClientId } from "$lib/client";
 
-/** Record the current client as a countdown participant */
+/**
+ * Record the current client as a countdown participant.
+ *
+ * Checks for an existing entry before writing to avoid duplicates.
+ * Logs a Firebase Analytics event on successful join.
+ *
+ * @param name - Display name for the participant, or empty for "Anonymous".
+ * @returns "joined" on success, "already" if the client already exists.
+ */
 export async function joinCountdown(name: string): Promise<string> {
 	const clientId = getClientId();
 	const displayName = name !== "" ? name : "Anonymous";
@@ -25,7 +33,11 @@ export async function joinCountdown(name: string): Promise<string> {
 	return "joined";
 }
 
-/** Check whether the current client has already joined */
+/**
+ * Check whether the current client has already joined the countdown.
+ *
+ * @returns True if a participant entry exists for this client.
+ */
 export async function checkAlreadyJoined(): Promise<boolean> {
 	const clientId = getClientId();
 	const snapshot = await get(child(ref(database), `participants/${clientId}`));
