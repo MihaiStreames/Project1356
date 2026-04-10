@@ -5,6 +5,7 @@
 	let oldValue = $state("");
 	let rolling = $state(false);
 
+	// trigger roll animation whenever the displayed value changes
 	$effect((): void => {
 		if (value !== prevValue) {
 			oldValue = prevValue;

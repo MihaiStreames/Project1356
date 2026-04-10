@@ -25,7 +25,7 @@
 	}
 
 	onMount((): void => {
-		// realtime participants listener
+		// subscribe to realtime participant count and last-5 joiners
 		unsubParticipants = onValue(
 			participantsRef,
 			(snap: DataSnapshot): void => {
@@ -42,18 +42,21 @@
 					if (val !== null && typeof val.joinedAt === "number") entries.push(val);
 				});
 				entries.sort((a, b) => a.joinedAt - b.joinedAt);
+				// keep only the 5 most recent, newest first
 				recentJoiners = entries.slice(-5).reverse();
 			},
+
 			(err: Error): void => {
 				console.error("participants count error:", err);
 			},
 		);
 
-		// check if already joined
+		// restore join state from fingerprint so returning visitors skip the form
 		void checkAlreadyJoined()
 			.then((joined: boolean): void => {
 				if (joined) isJoined = true;
 			})
+
 			.catch((err: unknown): void => {
 				console.error("failed to check join status:", err);
 			});

@@ -8,6 +8,7 @@
 	} = $props();
 
 	let nameValue = $state("");
+	// guards against double-submit while the join request is in-flight
 	let joinInFlight = $state(false);
 
 	async function handleSubmit(e: Event): Promise<void> {

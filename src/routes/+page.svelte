@@ -26,6 +26,7 @@
 	let rafId: number | undefined;
 	let unsubCountdown: Unsubscribe | undefined;
 
+	/** Recompute remaining time and progress from the cached start timestamp. */
 	function tick(): void {
 		const startTimestamp = cachedStartTimestamp;
 		if (startTimestamp === null) {
@@ -78,11 +79,12 @@
 	}
 
 	onMount((): void => {
+		// log page view for analytics funnel tracking
 		if (analytics !== null) {
 			logEvent(analytics, "page_view", { page: "countdown" });
 		}
 
-		// realtime countdown listener
+		// subscribe to countdown start timestamp; ticks locally via rAF
 		unsubCountdown = onValue(
 			countdownRef,
 			(snap: DataSnapshot): void => {
