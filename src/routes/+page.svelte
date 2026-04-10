@@ -1,50 +1,20 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
-	import { database, analytics, countdownRef, participantsRef } from "$lib/firebase";
-	import { onValue, get, set, child, ref, serverTimestamp } from "firebase/database";
-	import { logEvent } from "firebase/analytics";
+	import { countdownRef } from "$lib/firebase";
+	import { onValue } from "firebase/database";
 	import type { Unsubscribe, DataSnapshot } from "firebase/database";
+	import type { DigitState } from "$lib/types";
+	import Ambient from "$lib/components/Ambient.svelte";
+	import Clock from "$lib/components/clock/Clock.svelte";
+	import Footer from "$lib/components/Footer.svelte";
+	import JoinSection from "$lib/components/join/JoinSection.svelte";
+	import ProgressBar from "$lib/components/ProgressBar.svelte";
 
 	const DAYS = 1356;
 	const TOTAL_MS = DAYS * 24 * 60 * 60 * 1000;
 
 	const pad2 = (n: number): string => String(n).padStart(2, "0");
 	const clamp01 = (x: number): number => Math.max(0, Math.min(1, x));
-
-	function formatDate(timestamp: number): string {
-		return new Date(timestamp).toLocaleString("en-US", {
-			year: "numeric",
-			month: "long",
-			day: "numeric",
-			hour: "2-digit",
-			minute: "2-digit",
-			second: "2-digit",
-			hour12: true,
-		});
-	}
-
-	function getClientId(): string {
-		const stored = localStorage.getItem("project1356-client-id");
-		if (stored !== null) return stored;
-
-		const bytes = new Uint8Array(8);
-		crypto.getRandomValues(bytes);
-		const id = `client_${Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("")}`;
-		localStorage.setItem("project1356-client-id", id);
-		return id;
-	}
-
-	interface Joiner {
-		name: string;
-		joinedAt: number;
-	}
-
-	interface DigitState {
-		days: boolean;
-		hours: boolean;
-		minutes: boolean;
-		seconds: boolean;
-	}
 
 	let cachedStartTimestamp: number | null = $state(null);
 	const previousValues: Record<string, string | null> = {
@@ -53,7 +23,6 @@
 		minutes: null,
 		seconds: null,
 	};
-	let joinInFlight = $state(false);
 	let status = $state("Waiting to start...");
 	let progressWidth = $state("0%");
 	let progressText = $state("0.00000000%");
@@ -61,12 +30,6 @@
 	let hours = $state("00");
 	let minutes = $state("00");
 	let seconds = $state("00");
-	let joinCountText = $state("0 joined");
-	let recentJoiners: Joiner[] = $state([]);
-	let isJoined = $state(false);
-	let isDisabled = $state(false);
-	let btnText = $state("Join");
-	let nameInputDisabled = $state(false);
 	// tracks which digit keys are currently animating
 	const updatingDigits: DigitState = $state({
 		days: false,
@@ -75,11 +38,8 @@
 		seconds: false,
 	});
 
-	let nameValue = $state("");
-
 	let tickInterval: ReturnType<typeof setInterval> | undefined;
 	let unsubCountdown: Unsubscribe | undefined;
-	let unsubParticipants: Unsubscribe | undefined;
 
 	function updateDigit(key: keyof DigitState, newValue: string): void {
 		if (previousValues[key] === newValue) return;
@@ -151,58 +111,6 @@
 		updateDigit("seconds", sStr);
 	}
 
-	async function joinCountdown(name: string): Promise<string> {
-		const clientId = getClientId();
-		const displayName = name !== "" ? name : "Anonymous";
-
-		const snapshot = await get(child(ref(database), `participants/${clientId}`));
-		const existingVal: unknown = snapshot.val();
-		if (existingVal !== null) {
-			return "already";
-		}
-
-		await set(child(ref(database), `participants/${clientId}`), {
-			name: displayName,
-			joinedAt: serverTimestamp(),
-		});
-
-		if (analytics !== null) {
-			logEvent(analytics, "joined_countdown", { named: displayName !== "Anonymous" });
-		}
-		return "joined";
-	}
-
-	function disableJoinForm(): void {
-		isJoined = true;
-		isDisabled = true;
-		btnText = "Joined";
-		nameInputDisabled = true;
-	}
-
-	function enableJoinForm(): void {
-		isJoined = false;
-		isDisabled = false;
-		btnText = "Join";
-		nameInputDisabled = false;
-	}
-
-	async function handleSubmit(e: Event): Promise<void> {
-		e.preventDefault();
-		if (joinInFlight) return;
-		joinInFlight = true;
-		disableJoinForm();
-
-		try {
-			await joinCountdown(nameValue.trim());
-			disableJoinForm();
-		} catch (err: unknown) {
-			console.error("error joining:", err);
-			enableJoinForm();
-		} finally {
-			joinInFlight = false;
-		}
-	}
-
 	onMount((): void => {
 		// realtime countdown listener
 		unsubCountdown = onValue(
@@ -221,46 +129,10 @@
 		);
 
 		tickInterval = setInterval(tick, 250);
-
-		// realtime participants listener
-		unsubParticipants = onValue(
-			participantsRef,
-			(snap: DataSnapshot): void => {
-				// firebase val() returns unknown at runtime
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				const data: Record<string, unknown> = snap.val() ?? {};
-				const count = Object.keys(data).length;
-				joinCountText = `${String(count)} joined`;
-
-				const entries: Joiner[] = [];
-				snap.forEach((childSnap: DataSnapshot): void => {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					const val: Joiner | null = childSnap.val();
-					if (val !== null && typeof val.joinedAt === "number") entries.push(val);
-				});
-				entries.sort((a, b) => a.joinedAt - b.joinedAt);
-				recentJoiners = entries.slice(-5).reverse();
-			},
-			(err: Error): void => {
-				console.error("participants count error:", err);
-			},
-		);
-
-		// check if already joined
-		const clientId = getClientId();
-		void get(child(ref(database), `participants/${clientId}`))
-			.then((snap: DataSnapshot): void => {
-				const val: unknown = snap.val();
-				if (val !== null) disableJoinForm();
-			})
-			.catch((err: unknown): void => {
-				console.error("failed to check join status:", err);
-			});
 	});
 
 	onDestroy((): void => {
 		if (unsubCountdown !== undefined) unsubCountdown();
-		if (unsubParticipants !== undefined) unsubParticipants();
 		if (tickInterval !== undefined) clearInterval(tickInterval);
 	});
 </script>
@@ -269,11 +141,7 @@
 	<title>Project 1356</title>
 </svelte:head>
 
-<div class="ambient">
-	<div class="glow orb-one"></div>
-	<div class="glow orb-two"></div>
-	<div class="grid"></div>
-</div>
+<Ambient />
 
 <main class="wrap">
 	<header class="hero">
@@ -281,77 +149,62 @@
 		<h1>Project 1356</h1>
 	</header>
 
-	<section class="clock">
-		<div class="time-slab">
-			<div class="digits" class:updating={updatingDigits.days}>{days}</div>
-			<div class="label">Days</div>
-		</div>
-		<div class="divider">:</div>
-		<div class="time-slab">
-			<div class="digits" class:updating={updatingDigits.hours}>{hours}</div>
-			<div class="label">Hours</div>
-		</div>
-		<div class="divider">:</div>
-		<div class="time-slab">
-			<div class="digits" class:updating={updatingDigits.minutes}>{minutes}</div>
-			<div class="label">Minutes</div>
-		</div>
-		<div class="divider">:</div>
-		<div class="time-slab">
-			<div class="digits" class:updating={updatingDigits.seconds}>{seconds}</div>
-			<div class="label">Seconds</div>
-		</div>
-	</section>
-
-	<section class="progress-block">
-		<div class="progress-bar">
-			<div style:width={progressWidth} class="progress-fill"></div>
-		</div>
-		<div class="progress-meta">
-			<p class="progress-meta-title">{status}</p>
-			<span class="progress-meta-count">{progressText}</span>
-		</div>
-	</section>
-
-	<section class="join" class:is-joined={isJoined}>
-		<div class="join-copy">
-			<h2>Join the countdown</h2>
-			<p>Add your name to the timeline. Optional, but nice for the record.</p>
-		</div>
-		<form class="join-form" class:is-disabled={isDisabled} onsubmit={handleSubmit}>
-			<input
-				aria-label="Your name (optional)"
-				disabled={nameInputDisabled}
-				maxlength={32}
-				placeholder="Name (optional)"
-				type="text"
-				bind:value={nameValue}
-			/>
-			<button disabled={nameInputDisabled} type="submit">{btnText}</button>
-		</form>
-		<div class="join-recent">
-			<div class="join-recent-header">
-				<p class="join-recent-title">Recent joiners</p>
-				<span id="joinCount">{joinCountText}</span>
-			</div>
-			<ul class="join-list">
-				{#if recentJoiners.length === 0}
-					<li class="join-item placeholder">Waiting for the first joiner...</li>
-				{:else}
-					{#each recentJoiners as joiner (joiner.joinedAt)}
-						<li class="join-item join-item-animate">
-							<span class="join-name">{joiner.name !== "" ? joiner.name : "Anonymous"}</span>
-							<span class="join-time">{formatDate(joiner.joinedAt)}</span>
-						</li>
-					{/each}
-				{/if}
-			</ul>
-		</div>
-	</section>
-
-	<footer class="footer">
-		<a href="https://github.com/MihaiStreames/Project1356" rel="noopener noreferrer" target="_blank"
-			>MihaiStreames - 2026</a
-		>
-	</footer>
+	<Clock {days} {hours} {minutes} {seconds} {updatingDigits} />
+	<ProgressBar {status} text={progressText} width={progressWidth} />
+	<JoinSection />
+	<Footer />
 </main>
+
+<style>
+	.wrap {
+		width: min(980px, 100%);
+		display: grid;
+		gap: 2.5rem;
+		position: relative;
+		z-index: 1;
+		animation: float-in 0.8s ease-out both;
+	}
+
+	@keyframes float-in {
+		0% {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		100% {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.hero {
+		text-align: center;
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	h1 {
+		font-size: clamp(2.5rem, 5vw, 4rem);
+		font-weight: 700;
+		letter-spacing: -0.03em;
+	}
+
+	.eyebrow {
+		text-transform: uppercase;
+		letter-spacing: 0.4em;
+		font-size: 0.7rem;
+		color: var(--text-muted);
+	}
+
+	@media (max-width: 720px) {
+		.wrap {
+			gap: 2rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.wrap {
+			animation: none;
+			transition: none;
+		}
+	}
+</style>

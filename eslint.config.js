@@ -116,8 +116,7 @@ export default defineConfig([
 			"svelte/shorthand-directive": "error",
 			"svelte/sort-attributes": "error",
 			"svelte/spaced-html-comment": "error",
-			// classes live in app.css, not scoped <style> blocks
-			"svelte/no-unused-class-name": "off",
+			"svelte/no-unused-class-name": ["error", { allowedClassNames: ["panel"] }],
 		},
 	},
 	{
