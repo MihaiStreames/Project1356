@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
-	import { database, analytics, participantsRef } from "$lib/firebase";
-	import { onValue, get, set, child, ref, serverTimestamp } from "firebase/database";
-	import { logEvent } from "firebase/analytics";
+	import { participantsRef } from "$lib/firebase";
+	import { onValue } from "firebase/database";
 	import type { Unsubscribe, DataSnapshot } from "firebase/database";
 	import type { Joiner } from "$lib/types";
+	import { joinCountdown } from "$lib/participants";
+	import { checkAlreadyJoined } from "$lib/participants";
 	import JoinForm from "./JoinForm.svelte";
 	import RecentJoiners from "./RecentJoiners.svelte";
 
@@ -13,38 +14,6 @@
 	let recentJoiners: Joiner[] = $state([]);
 
 	let unsubParticipants: Unsubscribe | undefined;
-
-	function getClientId(): string {
-		const stored = localStorage.getItem("project1356-client-id");
-		if (stored !== null) return stored;
-
-		const bytes = new Uint8Array(8);
-		crypto.getRandomValues(bytes);
-		const id = `client_${Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("")}`;
-		localStorage.setItem("project1356-client-id", id);
-		return id;
-	}
-
-	async function joinCountdown(name: string): Promise<string> {
-		const clientId = getClientId();
-		const displayName = name !== "" ? name : "Anonymous";
-
-		const snapshot = await get(child(ref(database), `participants/${clientId}`));
-		const existingVal: unknown = snapshot.val();
-		if (existingVal !== null) {
-			return "already";
-		}
-
-		await set(child(ref(database), `participants/${clientId}`), {
-			name: displayName,
-			joinedAt: serverTimestamp(),
-		});
-
-		if (analytics !== null) {
-			logEvent(analytics, "joined_countdown", { named: displayName !== "Anonymous" });
-		}
-		return "joined";
-	}
 
 	async function handleJoin(name: string): Promise<void> {
 		try {
@@ -81,11 +50,9 @@
 		);
 
 		// check if already joined
-		const clientId = getClientId();
-		void get(child(ref(database), `participants/${clientId}`))
-			.then((snap: DataSnapshot): void => {
-				const val: unknown = snap.val();
-				if (val !== null) isJoined = true;
+		void checkAlreadyJoined()
+			.then((joined: boolean): void => {
+				if (joined) isJoined = true;
 			})
 			.catch((err: unknown): void => {
 				console.error("failed to check join status:", err);

@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
-	import { countdownRef } from "$lib/firebase";
+	import { analytics, countdownRef } from "$lib/firebase";
+	import { logEvent } from "firebase/analytics";
 	import { onValue } from "firebase/database";
 	import type { Unsubscribe, DataSnapshot } from "firebase/database";
-	import type { DigitState } from "$lib/types";
+	import { pad2, clamp01 } from "$lib/utils";
 	import Ambient from "$lib/components/Ambient.svelte";
 	import Clock from "$lib/components/clock/Clock.svelte";
 	import Footer from "$lib/components/Footer.svelte";
@@ -13,16 +14,7 @@
 	const DAYS = 1356;
 	const TOTAL_MS = DAYS * 24 * 60 * 60 * 1000;
 
-	const pad2 = (n: number): string => String(n).padStart(2, "0");
-	const clamp01 = (x: number): number => Math.max(0, Math.min(1, x));
-
 	let cachedStartTimestamp: number | null = $state(null);
-	const previousValues: Record<string, string | null> = {
-		days: null,
-		hours: null,
-		minutes: null,
-		seconds: null,
-	};
 	let status = $state("Waiting to start...");
 	let progressWidth = $state("0%");
 	let progressText = $state("0.00000000%");
@@ -30,25 +22,9 @@
 	let hours = $state("00");
 	let minutes = $state("00");
 	let seconds = $state("00");
-	// tracks which digit keys are currently animating
-	const updatingDigits: DigitState = $state({
-		days: false,
-		hours: false,
-		minutes: false,
-		seconds: false,
-	});
 
-	let tickInterval: ReturnType<typeof setInterval> | undefined;
+	let rafId: number | undefined;
 	let unsubCountdown: Unsubscribe | undefined;
-
-	function updateDigit(key: keyof DigitState, newValue: string): void {
-		if (previousValues[key] === newValue) return;
-		previousValues[key] = newValue;
-		updatingDigits[key] = true;
-		setTimeout((): void => {
-			updatingDigits[key] = false;
-		}, 400);
-	}
 
 	function tick(): void {
 		const startTimestamp = cachedStartTimestamp;
@@ -73,16 +49,10 @@
 
 		if (remaining <= 0) {
 			status = "Countdown complete";
-			const z = "0000";
-			const zz = "00";
-			days = z;
-			hours = zz;
-			minutes = zz;
-			seconds = zz;
-			updateDigit("days", z);
-			updateDigit("hours", zz);
-			updateDigit("minutes", zz);
-			updateDigit("seconds", zz);
+			days = "0000";
+			hours = "00";
+			minutes = "00";
+			seconds = "00";
 			progressWidth = "100%";
 			progressText = "100.00000000%";
 			return;
@@ -96,22 +66,22 @@
 		const m = Math.floor((totalSeconds % 3600) / 60);
 		const s = totalSeconds % 60;
 
-		const dStr = String(d).padStart(4, "0");
-		const hStr = pad2(h);
-		const mStr = pad2(m);
-		const sStr = pad2(s);
+		days = String(d).padStart(4, "0");
+		hours = pad2(h);
+		minutes = pad2(m);
+		seconds = pad2(s);
+	}
 
-		days = dStr;
-		hours = hStr;
-		minutes = mStr;
-		seconds = sStr;
-		updateDigit("days", dStr);
-		updateDigit("hours", hStr);
-		updateDigit("minutes", mStr);
-		updateDigit("seconds", sStr);
+	function rafLoop(): void {
+		tick();
+		rafId = requestAnimationFrame(rafLoop);
 	}
 
 	onMount((): void => {
+		if (analytics !== null) {
+			logEvent(analytics, "page_view", { page: "countdown" });
+		}
+
 		// realtime countdown listener
 		unsubCountdown = onValue(
 			countdownRef,
@@ -128,12 +98,12 @@
 			},
 		);
 
-		tickInterval = setInterval(tick, 250);
+		rafId = requestAnimationFrame(rafLoop);
 	});
 
 	onDestroy((): void => {
 		if (unsubCountdown !== undefined) unsubCountdown();
-		if (tickInterval !== undefined) clearInterval(tickInterval);
+		if (rafId !== undefined) cancelAnimationFrame(rafId);
 	});
 </script>
 
@@ -149,7 +119,7 @@
 		<h1>Project 1356</h1>
 	</header>
 
-	<Clock {days} {hours} {minutes} {seconds} {updatingDigits} />
+	<Clock {days} {hours} {minutes} {seconds} />
 	<ProgressBar {status} text={progressText} width={progressWidth} />
 	<JoinSection />
 	<Footer />

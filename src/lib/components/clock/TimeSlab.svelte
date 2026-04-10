@@ -1,17 +1,31 @@
 <script lang="ts">
-	const {
-		label,
-		updating,
-		value,
-	}: {
-		label: string;
-		updating: boolean;
-		value: string;
-	} = $props();
+	const { label, value }: { label: string; value: string } = $props();
+
+	let prevValue = "";
+	let oldValue = $state("");
+	let rolling = $state(false);
+
+	$effect((): void => {
+		if (value !== prevValue) {
+			oldValue = prevValue;
+			prevValue = value;
+			if (oldValue !== "") {
+				rolling = true;
+				setTimeout((): void => {
+					rolling = false;
+				}, 400);
+			}
+		}
+	});
 </script>
 
 <div class="time-slab">
-	<div class="digits" class:updating>{value}</div>
+	<div class="digits-wrapper">
+		{#if rolling}
+			<div class="digit-old">{oldValue}</div>
+		{/if}
+		<div class="digit-current" class:rolling>{value}</div>
+	</div>
 	<div class="label">{label}</div>
 </div>
 
@@ -27,17 +41,53 @@
 		overflow: hidden;
 	}
 
-	.digits {
+	.digits-wrapper {
+		position: relative;
+		overflow: hidden;
+		height: 1.2em;
 		font-family: "Share Tech Mono", "SFMono-Regular", monospace;
 		font-size: clamp(2.2rem, 4vw, 3.8rem);
 		letter-spacing: 0.08em;
 		font-weight: 400;
-		transition: transform 0.4s ease, opacity 0.4s ease;
 	}
 
-	.digits.updating {
-		transform: translateY(-6px);
-		opacity: 0.4;
+	.digit-current {
+		position: relative;
+		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.digit-current.rolling {
+		animation: roll-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+	}
+
+	.digit-old {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		animation: roll-out 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+	}
+
+	@keyframes roll-in {
+		0% {
+			transform: translateY(100%);
+			opacity: 0;
+		}
+		100% {
+			transform: translateY(0);
+			opacity: 1;
+		}
+	}
+
+	@keyframes roll-out {
+		0% {
+			transform: translateY(0);
+			opacity: 1;
+		}
+		100% {
+			transform: translateY(-100%);
+			opacity: 0;
+		}
 	}
 
 	.label {
@@ -56,7 +106,7 @@
 	}
 
 	@media (max-width: 520px) {
-		.digits {
+		.digits-wrapper {
 			font-size: clamp(1.7rem, 8vw, 2.6rem);
 			letter-spacing: 0.05em;
 		}
@@ -72,7 +122,12 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.digits {
+		.digit-current {
+			animation: none;
+			transition: none;
+		}
+
+		.digit-old {
 			animation: none;
 			transition: none;
 		}

@@ -1,6 +1,20 @@
+<script lang="ts">
+	import { analytics } from "$lib/firebase";
+	import { logEvent } from "firebase/analytics";
+
+	function handleFooterClick(): void {
+		if (analytics !== null) {
+			logEvent(analytics, "footer_link_click", { url: "github" });
+		}
+	}
+</script>
+
 <footer class="footer">
-	<a href="https://github.com/MihaiStreames/Project1356" rel="noopener noreferrer" target="_blank"
-		>MihaiStreames - 2026</a
+	<a
+		href="https://github.com/MihaiStreames/Project1356"
+		onclick={handleFooterClick}
+		rel="noopener noreferrer"
+		target="_blank">MihaiStreames - 2026</a
 	>
 </footer>
 
