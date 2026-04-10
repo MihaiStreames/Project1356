@@ -1,8 +1,26 @@
 {
   "name": "project1356",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
+  "description": "1,356 days. 6 life-changing goals. Join the global countdown.",
+  "author": {
+    "name": "MihaiStreames",
+    "url": "https://github.com/MihaiStreames"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MihaiStreames/Project1356"
+  },
+  "homepage": "https://mihaistreames.github.io/Project1356/",
+  "keywords": [
+    "countdown",
+    "sveltekit",
+    "firebase",
+    "community",
+    "challenge"
+  ],
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
