@@ -33,11 +33,9 @@
 		height: 100%;
 		width: 100%;
 		background: var(--progress-fill);
-		border-radius: 999px;
 		transform-origin: left;
 		transform: scaleX(0);
 		transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-		box-shadow: 0 0 12px rgba(255, 209, 102, 0.4);
 		will-change: transform;
 	}
 
