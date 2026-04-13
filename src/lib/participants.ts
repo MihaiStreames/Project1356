@@ -13,25 +13,25 @@ import { getClientId } from "$lib/client";
  * @returns "joined" on success, "already" if the client already exists.
  */
 export async function joinCountdown(name: string): Promise<string> {
-	const clientId = getClientId();
-	const displayName = name !== "" ? name : "Anonymous";
-	const entryRef = child(ref(database), `participants/${clientId}`);
+  const clientId = getClientId();
+  const displayName = name !== "" ? name : "Anonymous";
+  const entryRef = child(ref(database), `participants/${clientId}`);
 
-	const snapshot = await get(entryRef);
-	const existingVal: unknown = snapshot.val();
-	if (existingVal !== null) {
-		return "already";
-	}
+  const snapshot = await get(entryRef);
+  const existingVal: unknown = snapshot.val();
+  if (existingVal !== null) {
+    return "already";
+  }
 
-	await set(entryRef, {
-		name: displayName,
-		joinedAt: serverTimestamp(),
-	});
+  await set(entryRef, {
+    name: displayName,
+    joinedAt: serverTimestamp(),
+  });
 
-	if (analytics !== null) {
-		logEvent(analytics, "joined_countdown", { named: displayName !== "Anonymous" });
-	}
-	return "joined";
+  if (analytics !== null) {
+    logEvent(analytics, "joined_countdown", { named: displayName !== "Anonymous" });
+  }
+  return "joined";
 }
 
 /**
@@ -40,8 +40,8 @@ export async function joinCountdown(name: string): Promise<string> {
  * @returns True if a participant entry exists for this client.
  */
 export async function checkAlreadyJoined(): Promise<boolean> {
-	const clientId = getClientId();
-	const snapshot = await get(child(ref(database), `participants/${clientId}`));
-	const val: unknown = snapshot.val();
-	return val !== null;
+  const clientId = getClientId();
+  const snapshot = await get(child(ref(database), `participants/${clientId}`));
+  const val: unknown = snapshot.val();
+  return val !== null;
 }

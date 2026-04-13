@@ -1,115 +1,115 @@
 <script lang="ts">
-	import { participantsRef } from "$lib/firebase";
-	import { onValue } from "firebase/database";
-	import type { DataSnapshot } from "firebase/database";
-	import type { Joiner } from "$lib/types";
-	import { joinCountdown, checkAlreadyJoined } from "$lib/participants";
-	import JoinForm from "./JoinForm.svelte";
-	import RecentJoiners from "./RecentJoiners.svelte";
+  import { participantsRef } from "$lib/firebase";
+  import { onValue } from "firebase/database";
+  import type { DataSnapshot } from "firebase/database";
+  import type { Joiner } from "$lib/types";
+  import { joinCountdown, checkAlreadyJoined } from "$lib/participants";
+  import JoinForm from "./JoinForm.svelte";
+  import RecentJoiners from "./RecentJoiners.svelte";
 
-	let isJoined = $state(false);
-	let joinCountText = $state("0 joined");
-	let recentJoiners: Joiner[] = $state([]);
+  let isJoined = $state(false);
+  let joinCountText = $state("0 joined");
+  let recentJoiners: Joiner[] = $state([]);
 
-	async function handleJoin(name: string): Promise<void> {
-		try {
-			await joinCountdown(name);
-			isJoined = true;
-		} catch (err: unknown) {
-			console.error("error joining:", err);
-		}
-	}
+  async function handleJoin(name: string): Promise<void> {
+    try {
+      await joinCountdown(name);
+      isJoined = true;
+    } catch (err: unknown) {
+      console.error("error joining:", err);
+    }
+  }
 
-	$effect(() => {
-		const unsub = onValue(
-			participantsRef,
-			(snap: DataSnapshot): void => {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				const data: Record<string, unknown> = snap.val() ?? {};
-				joinCountText = `${String(Object.keys(data).length)} joined`;
+  $effect(() => {
+    const unsub = onValue(
+      participantsRef,
+      (snap: DataSnapshot): void => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const data: Record<string, unknown> = snap.val() ?? {};
+        joinCountText = `${String(Object.keys(data).length)} joined`;
 
-				const entries: Joiner[] = [];
-				snap.forEach((childSnap: DataSnapshot): void => {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					const val: Joiner | null = childSnap.val();
-					if (val !== null && typeof val.joinedAt === "number") entries.push(val);
-				});
+        const entries: Joiner[] = [];
+        snap.forEach((childSnap: DataSnapshot): void => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          const val: Joiner | null = childSnap.val();
+          if (val !== null && typeof val.joinedAt === "number") entries.push(val);
+        });
 
-				entries.sort((a, b) => b.joinedAt - a.joinedAt);
-				recentJoiners = entries;
-			},
+        entries.sort((a, b) => b.joinedAt - a.joinedAt);
+        recentJoiners = entries;
+      },
 
-			(err: Error): void => {
-				console.error("participants count error:", err);
-			},
-		);
+      (err: Error): void => {
+        console.error("participants count error:", err);
+      },
+    );
 
-		void checkAlreadyJoined()
-			.then((joined: boolean): void => {
-				if (joined) isJoined = true;
-			})
+    void checkAlreadyJoined()
+      .then((joined: boolean): void => {
+        if (joined) isJoined = true;
+      })
 
-			.catch((err: unknown): void => {
-				console.error("failed to check join status:", err);
-			});
+      .catch((err: unknown): void => {
+        console.error("failed to check join status:", err);
+      });
 
-		return (): void => {
-			unsub();
-		};
-	});
+    return (): void => {
+      unsub();
+    };
+  });
 </script>
 
 <section class="join panel" class:is-joined={isJoined}>
-	<div class="join-copy">
-		<h2>Join the countdown</h2>
-		<p>Add your name to the timeline. Optional, but nice for the record.</p>
-	</div>
-	<JoinForm disabled={isJoined} onJoin={handleJoin} />
-	<RecentJoiners count={joinCountText} joiners={recentJoiners} />
+  <div class="join-copy">
+    <h2>Join the countdown</h2>
+    <p>Add your name to the timeline. Optional, but nice for the record.</p>
+  </div>
+  <JoinForm disabled={isJoined} onJoin={handleJoin} />
+  <RecentJoiners count={joinCountText} joiners={recentJoiners} />
 </section>
 
 <style>
-	.join {
-		display: grid;
-		gap: 1.5rem;
-		transition: gap 240ms ease;
-	}
+  .join {
+    display: grid;
+    gap: 1.5rem;
+    transition: gap 240ms ease;
+  }
 
-	.join.is-joined {
-		gap: 0;
-	}
+  .join.is-joined {
+    gap: 0;
+  }
 
-	.join-copy {
-		max-height: 200px;
-		overflow: hidden;
-		transition:
-			opacity 240ms ease,
-			max-height 240ms ease;
-	}
+  .join-copy {
+    max-height: 200px;
+    overflow: hidden;
+    transition:
+      opacity 240ms ease,
+      max-height 240ms ease;
+  }
 
-	.join-copy h2 {
-		font-size: 1.4rem;
-		margin-bottom: 0.4rem;
-	}
+  .join-copy h2 {
+    font-size: 1.4rem;
+    margin-bottom: 0.4rem;
+  }
 
-	.join-copy p {
-		color: var(--text-muted);
-	}
+  .join-copy p {
+    color: var(--text-muted);
+  }
 
-	.join.is-joined .join-copy {
-		opacity: 0;
-		max-height: 0;
-		pointer-events: none;
-	}
+  .join.is-joined .join-copy {
+    opacity: 0;
+    max-height: 0;
+    pointer-events: none;
+  }
 
-	.join.is-joined :global(.join-recent) {
-		border-top: none;
-		padding-top: 0;
-	}
+  .join.is-joined :global(.join-recent) {
+    border-top: none;
+    padding-top: 0;
+  }
 
-	@media (max-width: 520px) {
-		.join {
-			padding: 1.25rem;
-		}
-	}
+  @media (max-width: 520px) {
+    .join {
+      padding: 1.25rem;
+    }
+  }
 </style>

@@ -10,13 +10,13 @@ export const clamp01 = (x: number): number => Math.max(0, Math.min(1, x));
  * @returns Formatted string like "January 7, 2026, 12:00:00 AM".
  */
 export function formatDate(timestamp: number): string {
-	return new Date(timestamp).toLocaleString("en-US", {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
-		hour12: true,
-	});
+  return new Date(timestamp).toLocaleString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
 }
