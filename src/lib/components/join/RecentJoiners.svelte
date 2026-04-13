@@ -14,13 +14,13 @@
 <div class="join-recent">
 	<div class="join-recent-header">
 		<p class="join-recent-title">Recent joiners</p>
-		<span id="joinCount">{count}</span>
+		<span class="join-count">{count}</span>
 	</div>
 	<ul class="join-list">
 		{#if joiners.length === 0}
 			<li class="join-item placeholder">Waiting for the first joiner...</li>
 		{:else}
-			{#each joiners as joiner (joiner.joinedAt)}
+			{#each joiners as joiner (`${joiner.joinedAt}-${joiner.name}`)}
 				<li class="join-item join-item-animate">
 					<span class="join-name">{joiner.name !== "" ? joiner.name : "Anonymous"}</span>
 					<span class="join-time">{formatDate(joiner.joinedAt)}</span>
@@ -55,7 +55,7 @@
 		white-space: nowrap;
 	}
 
-	.join-recent-header #joinCount {
+	.join-recent-header .join-count {
 		font-size: var(--text-micro-size);
 		text-transform: uppercase;
 		letter-spacing: var(--text-micro-letter-tight);
@@ -69,6 +69,15 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
+		max-height: calc(var(--control-height) * 5 + 0.5rem * 4);
+		overflow-y: auto;
+		overflow-x: hidden;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.join-list::-webkit-scrollbar {
+		display: none;
 	}
 
 	.join-item {

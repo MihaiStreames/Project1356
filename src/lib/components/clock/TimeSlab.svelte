@@ -10,8 +10,10 @@
 		if (value !== prevValue) {
 			oldValue = prevValue;
 			prevValue = value;
+
 			if (oldValue !== "") {
 				rolling = true;
+
 				setTimeout((): void => {
 					rolling = false;
 				}, 400);

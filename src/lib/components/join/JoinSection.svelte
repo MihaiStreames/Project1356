@@ -1,19 +1,15 @@
 <script lang="ts">
-	import { onMount, onDestroy } from "svelte";
 	import { participantsRef } from "$lib/firebase";
 	import { onValue } from "firebase/database";
-	import type { Unsubscribe, DataSnapshot } from "firebase/database";
+	import type { DataSnapshot } from "firebase/database";
 	import type { Joiner } from "$lib/types";
-	import { joinCountdown } from "$lib/participants";
-	import { checkAlreadyJoined } from "$lib/participants";
+	import { joinCountdown, checkAlreadyJoined } from "$lib/participants";
 	import JoinForm from "./JoinForm.svelte";
 	import RecentJoiners from "./RecentJoiners.svelte";
 
 	let isJoined = $state(false);
 	let joinCountText = $state("0 joined");
 	let recentJoiners: Joiner[] = $state([]);
-
-	let unsubParticipants: Unsubscribe | undefined;
 
 	async function handleJoin(name: string): Promise<void> {
 		try {
@@ -24,16 +20,13 @@
 		}
 	}
 
-	onMount((): void => {
-		// subscribe to realtime participant count and last-5 joiners
-		unsubParticipants = onValue(
+	$effect(() => {
+		const unsub = onValue(
 			participantsRef,
 			(snap: DataSnapshot): void => {
-				// firebase val() returns unknown at runtime
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const data: Record<string, unknown> = snap.val() ?? {};
-				const count = Object.keys(data).length;
-				joinCountText = `${String(count)} joined`;
+				joinCountText = `${String(Object.keys(data).length)} joined`;
 
 				const entries: Joiner[] = [];
 				snap.forEach((childSnap: DataSnapshot): void => {
@@ -41,9 +34,9 @@
 					const val: Joiner | null = childSnap.val();
 					if (val !== null && typeof val.joinedAt === "number") entries.push(val);
 				});
-				entries.sort((a, b) => a.joinedAt - b.joinedAt);
-				// keep only the 5 most recent, newest first
-				recentJoiners = entries.slice(-5).reverse();
+
+				entries.sort((a, b) => b.joinedAt - a.joinedAt);
+				recentJoiners = entries;
 			},
 
 			(err: Error): void => {
@@ -51,7 +44,6 @@
 			},
 		);
 
-		// restore join state from fingerprint so returning visitors skip the form
 		void checkAlreadyJoined()
 			.then((joined: boolean): void => {
 				if (joined) isJoined = true;
@@ -60,10 +52,10 @@
 			.catch((err: unknown): void => {
 				console.error("failed to check join status:", err);
 			});
-	});
 
-	onDestroy((): void => {
-		if (unsubParticipants !== undefined) unsubParticipants();
+		return (): void => {
+			unsub();
+		};
 	});
 </script>
 
@@ -90,7 +82,9 @@
 	.join-copy {
 		max-height: 200px;
 		overflow: hidden;
-		transition: opacity 240ms ease, max-height 240ms ease;
+		transition:
+			opacity 240ms ease,
+			max-height 240ms ease;
 	}
 
 	.join-copy h2 {

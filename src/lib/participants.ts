@@ -15,14 +15,15 @@ import { getClientId } from "$lib/client";
 export async function joinCountdown(name: string): Promise<string> {
 	const clientId = getClientId();
 	const displayName = name !== "" ? name : "Anonymous";
+	const entryRef = child(ref(database), `participants/${clientId}`);
 
-	const snapshot = await get(child(ref(database), `participants/${clientId}`));
+	const snapshot = await get(entryRef);
 	const existingVal: unknown = snapshot.val();
 	if (existingVal !== null) {
 		return "already";
 	}
 
-	await set(child(ref(database), `participants/${clientId}`), {
+	await set(entryRef, {
 		name: displayName,
 		joinedAt: serverTimestamp(),
 	});
