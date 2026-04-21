@@ -89,7 +89,7 @@
 
   .join-copy h2 {
     font-size: 1.4rem;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.5rem;
   }
 
   .join-copy p {

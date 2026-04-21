@@ -141,7 +141,6 @@
   <!-- discord uses OG tags primarily, theme-color helps with embed accent -->
   <meta name="theme-color" content="#ffd166" />
 
-  <!-- additional seo -->
   <link href="https://mihaistreames.github.io/Project1356/" rel="canonical" />
 </svelte:head>
 

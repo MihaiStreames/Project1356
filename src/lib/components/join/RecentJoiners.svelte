@@ -1,3 +1,7 @@
+<!--
+@component
+Scrollable list of recent joiners with a header showing total count.
+-->
 <script lang="ts">
   import type { Joiner } from "$lib/types";
   import { formatDate } from "$lib/utils";
@@ -6,7 +10,9 @@
     count,
     joiners,
   }: {
+    /** Pre-formatted count label, e.g. "42 joined". */
     count: string;
+    /** Sorted list of joiners, most recent first. */
     joiners: Joiner[];
   } = $props();
 </script>
@@ -32,15 +38,20 @@
 
 <style>
   .join-recent {
-    border-top: 1px solid var(--border);
-    padding-top: 1rem;
+    border-top: 0.5px solid var(--border);
+    padding-top: 0.75rem;
+  }
+
+  @supports not (border-top-width: 0.5px) {
+    .join-recent {
+      border-top-width: 1px;
+    }
   }
 
   .join-recent-header {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: baseline;
-    gap: 0.75rem 1rem;
     margin-bottom: 0.75rem;
     min-width: 0;
   }
@@ -50,13 +61,13 @@
     text-transform: uppercase;
     letter-spacing: var(--text-micro-letter);
     color: var(--text-muted);
-    margin-bottom: 0;
     min-width: 0;
     white-space: nowrap;
   }
 
   .join-recent-header .join-count {
     font-size: var(--text-micro-size);
+    font-variant-numeric: tabular-nums;
     text-transform: uppercase;
     letter-spacing: var(--text-micro-letter-tight);
     color: var(--text-muted);
@@ -81,18 +92,20 @@
   }
 
   .join-item {
+    --item-bg: rgba(0, 0, 0, 0.2);
+
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: var(--control-pad-y) var(--control-pad-x);
     min-height: var(--control-height);
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--item-bg);
     border-radius: var(--radius-md);
     font-size: 0.9rem;
   }
 
   .join-item-animate {
-    animation: join-slide 420ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+    animation: join-slide 420ms var(--ease-emphasized) both;
   }
 
   @keyframes join-slide {

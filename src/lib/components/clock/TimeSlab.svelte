@@ -48,7 +48,7 @@
     position: relative;
     overflow: hidden;
     height: 1.2em;
-    font-family: "Share Tech Mono", "SFMono-Regular", monospace;
+    font-family: var(--font-mono);
     font-size: clamp(2.2rem, 4vw, 3.8rem);
     letter-spacing: 0.08em;
     font-weight: 400;
@@ -56,11 +56,11 @@
 
   .digit-current {
     position: relative;
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.4s var(--ease-standard);
   }
 
   .digit-current.rolling {
-    animation: roll-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: roll-in 0.4s var(--ease-standard) forwards;
   }
 
   .digit-old {
@@ -68,7 +68,7 @@
     top: 0;
     left: 0;
     right: 0;
-    animation: roll-out 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: roll-out 0.4s var(--ease-standard) forwards;
   }
 
   @keyframes roll-in {
@@ -98,7 +98,7 @@
     letter-spacing: 0.4em;
     font-size: 0.7rem;
     color: var(--text-muted);
-    margin-top: 0.6rem;
+    margin-top: 0.5rem;
   }
 
   @media (max-width: 720px) {

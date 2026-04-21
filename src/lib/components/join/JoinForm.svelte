@@ -38,6 +38,13 @@
 
 <style>
   .join-form {
+    --input-focus-border: color-mix(in srgb, var(--accent) 60%, transparent);
+    --input-focus-ring: color-mix(in srgb, var(--accent) 15%, transparent);
+    --input-focus-bg: rgba(0, 0, 0, 0.4);
+    --submit-ink: #02130d;
+    --submit-shadow: 0 10px 20px color-mix(in srgb, var(--accent-2) 25%, transparent);
+    --submit-shadow-hover: 0 12px 26px color-mix(in srgb, var(--accent-2) 35%, transparent);
+
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 1rem;
@@ -56,21 +63,21 @@
 
   .join-form input:focus {
     outline: none;
-    border-color: rgba(255, 209, 102, 0.6);
-    box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.15);
-    background: rgba(0, 0, 0, 0.4);
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 0 3px var(--input-focus-ring);
+    background: var(--input-focus-bg);
   }
 
   .join-form button {
     background: var(--accent-2);
-    color: #02130d;
-    box-shadow: 0 10px 20px rgba(6, 214, 160, 0.25);
+    color: var(--submit-ink);
+    box-shadow: var(--submit-shadow);
     width: auto;
   }
 
   .join-form button:hover {
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: 0 12px 26px rgba(6, 214, 160, 0.35);
+    transform: translateY(-1px);
+    box-shadow: var(--submit-shadow-hover);
   }
 
   .join-form button:active {

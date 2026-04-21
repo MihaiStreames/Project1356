@@ -10,18 +10,14 @@ import { getClientId } from "$lib/client";
  * Logs a Firebase Analytics event on successful join.
  *
  * @param name - Display name for the participant, or empty for "Anonymous".
- * @returns "joined" on success, "already" if the client already exists.
  */
-export async function joinCountdown(name: string): Promise<string> {
+export async function joinCountdown(name: string): Promise<void> {
   const clientId = getClientId();
   const displayName = name !== "" ? name : "Anonymous";
   const entryRef = child(ref(database), `participants/${clientId}`);
 
   const snapshot = await get(entryRef);
-  const existingVal: unknown = snapshot.val();
-  if (existingVal !== null) {
-    return "already";
-  }
+  if (snapshot.val() !== null) return;
 
   await set(entryRef, {
     name: displayName,
@@ -31,7 +27,6 @@ export async function joinCountdown(name: string): Promise<string> {
   if (analytics !== null) {
     logEvent(analytics, "joined_countdown", { named: displayName !== "Anonymous" });
   }
-  return "joined";
 }
 
 /**

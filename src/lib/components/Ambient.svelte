@@ -17,37 +17,49 @@
 
   .glow {
     position: absolute;
-    width: 360px;
-    height: 360px;
+    width: 520px;
+    height: 520px;
     border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.5;
+    opacity: 0.55;
     will-change: transform;
+    transform: translateZ(0);
   }
 
   .orb-one {
-    top: -120px;
-    left: -60px;
-    background: rgba(255, 209, 102, 0.4);
+    top: -200px;
+    left: -140px;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--accent) 45%, transparent) 0%,
+      color-mix(in srgb, var(--accent) 20%, transparent) 35%,
+      transparent 70%
+    );
     animation: drift 18s ease-in-out infinite;
   }
 
   .orb-two {
-    bottom: -180px;
-    right: -60px;
-    background: rgba(6, 214, 160, 0.35);
+    bottom: -260px;
+    right: -140px;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--accent-2) 40%, transparent) 0%,
+      color-mix(in srgb, var(--accent-2) 18%, transparent) 35%,
+      transparent 70%
+    );
     animation: drift 22s ease-in-out infinite reverse;
   }
 
   .grid {
+    --grid-line: color-mix(in srgb, var(--text-primary) 4%, transparent);
+
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 80px 80px;
     opacity: 0.2;
   }
@@ -66,20 +78,19 @@
 
   @media (max-width: 720px) {
     .glow {
-      width: 280px;
-      height: 280px;
-      filter: blur(60px);
-      opacity: 0.45;
+      width: 380px;
+      height: 380px;
+      opacity: 0.5;
     }
 
     .orb-one {
-      top: -140px;
-      left: -120px;
+      top: -160px;
+      left: -160px;
     }
 
     .orb-two {
-      bottom: -200px;
-      right: -120px;
+      bottom: -220px;
+      right: -160px;
     }
   }
 

@@ -33,7 +33,7 @@
   }
 
   .divider {
-    font-family: "Share Tech Mono", monospace;
+    font-family: var(--font-mono);
     font-size: 2.5rem;
     color: var(--text-muted);
   }

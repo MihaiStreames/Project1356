@@ -1,46 +1,24 @@
-<a id="readme-top"></a>
+# Project1356
 
-<!-- PROJECT SHIELDS -->
-<div align="center">
+A community countdown website where participants commit to 6 life-changing goals over 1,356 days. Built with [SvelteKit](https://svelte.dev/docs/kit) and [Firebase](https://firebase.google.com/).
 
-[![Countdown Started](https://img.shields.io/badge/Countdown-Started%20Jan%207%2C%202026-ffd166?style=flat&logo=firebase&logoColor=white)](https://mihaistreames.github.io/Project1356/)
+[![Countdown Started](https://img.shields.io/badge/Countdown-Started%20Jan%207%2C%202026-ffd166?style=modern&logo=firebase&logoColor=white)](https://mihaistreames.github.io/Project1356/)
 [![Deploy](https://github.com/MihaiStreames/Project1356/actions/workflows/deploy.yml/badge.svg)](https://github.com/MihaiStreames/Project1356/actions/workflows/deploy.yml)
-[![License](https://img.shields.io/github/license/MihaiStreames/Project1356?label=License)](LICENSE)
+[![License](https://img.shields.io/github/license/MihaiStreames/Project1356)](LICENSE)
 
-</div>
+Licensed under MIT.
 
-<div align="center">
+## About
 
-  <h1>Project 1356</h1>
+Project 1356 is an [Instagram thing](https://www.instagram.com/project.1356/). I missed part 1 and did not want to miss part 2, so I built a site for it, quickly.
 
-  <h3 align="center">1,356 days. 6 life-changing goals.</h3>
+I originally did it raw (pure HTML, JS, and CSS). GitHub Pages meant no backend server, so I wired it up to Firebase for storage and auth: my first time using it, picked it because it was free and it slotted straight into a static site.
 
-  <p align="center">
-    A community countdown website where participants commit to 6 life-changing goals over 1,356 days. Built with SvelteKit and Firebase.
-  </p>
-</div>
+Later I rewrote the whole thing on SvelteKit, as a training project.
 
-<!-- ABOUT THE PROJECT -->
+Shame the guy who runs the Instagram account never showed the site to anyone, so it mostly ended up as a personal countdown with a community shape (shoutout to my friends who joined!).
 
-## About The Project
-
-Project 1356 is a 1,356-day countdown challenge. Set 6 life-changing goals and work toward them over 1,356 days. The rule: don't tell anyone what you're counting down to.
-
-Part 2 started January 7th, 2026.
-
-Visit the live countdown at [mihaistreames.github.io/Project1356](https://mihaistreames.github.io/Project1356/).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-### Built With
-
-- [SvelteKit](https://svelte.dev/docs/kit)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Firebase](https://firebase.google.com/)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- THE RULES -->
+Live at [mihaistreames.github.io/Project1356](https://mihaistreames.github.io/Project1356/). Part 2 started January 7th, 2026.
 
 ## The Rules
 
@@ -49,17 +27,9 @@ Visit the live countdown at [mihaistreames.github.io/Project1356](https://mihais
 3. **Don't tell anyone** what your specific goals are
 4. Every day counts
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- LICENSE -->
-
 ## License
 
-MIT. Do whatever you want with it. See [LICENSE](LICENSE) for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
----
+MIT. See [LICENSE](LICENSE).
 
 <div align="center">
 

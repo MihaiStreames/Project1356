@@ -1,11 +1,18 @@
+<!--
+@component
+Horizontal progress bar with status label and formatted count/text readout.
+-->
 <script lang="ts">
   const {
     progress,
     status,
     text,
   }: {
+    /** Fill ratio in the 0-1 range; bar scales along the X axis. */
     progress: number;
+    /** Short status label shown on the left of the meta row. */
     status: string;
+    /** Pre-formatted count or percentage shown on the right. */
     text: string;
   } = $props();
 </script>
@@ -35,7 +42,7 @@
     background: var(--progress-fill);
     transform-origin: left;
     transform: scaleX(0);
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.35s var(--ease-standard);
     will-change: transform;
   }
 
@@ -43,7 +50,6 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: baseline;
-    gap: 0.75rem 1rem;
     margin-top: 1rem;
     color: var(--text-muted);
     min-width: 0;
@@ -54,7 +60,6 @@
     text-transform: uppercase;
     letter-spacing: var(--text-micro-letter);
     color: var(--text-muted);
-    margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -76,14 +81,12 @@
     }
 
     .progress-meta {
-      gap: 0.5rem;
       font-size: calc(var(--text-micro-size) + 0.05rem);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .progress-fill {
-      animation: none;
       transition: none;
     }
   }
