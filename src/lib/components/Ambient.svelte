@@ -1,3 +1,5 @@
+<script lang="ts"></script>
+
 <div class="ambient">
   <div class="glow orb-one"></div>
   <div class="glow orb-two"></div>

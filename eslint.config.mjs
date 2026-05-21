@@ -4,7 +4,7 @@ import ts from "typescript-eslint";
 import svelte from "eslint-plugin-svelte";
 import prettier from "eslint-config-prettier";
 import globals from "globals";
-import svelteConfig from "./svelte.config.js";
+import svelteConfig from "./svelte.config.ts";
 
 export default defineConfig([
   {
@@ -24,59 +24,46 @@ export default defineConfig([
       },
       parserOptions: {
         projectService: {
-          allowDefaultProject: ["*.config.js"],
+          allowDefaultProject: ["svelte.config.ts"],
         },
         tsconfigRootDir: import.meta.dirname,
         extraFileExtensions: [".svelte"],
       },
     },
     rules: {
+      // disable base rules superseded by ts versions
       "no-unused-vars": "off",
+      "no-implied-eval": "off",
+      "no-throw-literal": "off",
+
+      // typescript overrides / additions not covered by presets
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
-      "@typescript-eslint/no-explicit-any": "error",
-      "@typescript-eslint/no-inferrable-types": "error",
-      "@typescript-eslint/consistent-type-imports": "error",
-      "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { prefer: "type-imports" },
+      ],
       "@typescript-eslint/no-import-type-side-effects": "error",
+      "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
       "@typescript-eslint/strict-boolean-expressions": "error",
-      "@typescript-eslint/no-unnecessary-condition": "error",
-      "@typescript-eslint/no-unsafe-argument": "error",
-      "@typescript-eslint/no-unsafe-assignment": "error",
-      "@typescript-eslint/no-unsafe-call": "error",
-      "@typescript-eslint/no-unsafe-member-access": "error",
-      "@typescript-eslint/no-unsafe-return": "error",
-      "@typescript-eslint/no-floating-promises": "error",
-      "@typescript-eslint/no-misused-promises": "error",
-      "@typescript-eslint/await-thenable": "error",
-      "@typescript-eslint/require-await": "error",
       "@typescript-eslint/return-await": ["error", "always"],
-      "@typescript-eslint/no-redundant-type-constituents": "error",
-      "@typescript-eslint/prefer-nullish-coalescing": "error",
-      "@typescript-eslint/prefer-optional-chain": "error",
-      "@typescript-eslint/no-non-null-assertion": "error",
-      "@typescript-eslint/no-unnecessary-type-assertion": "error",
-      "@typescript-eslint/switch-exhaustiveness-check": "error",
       "@typescript-eslint/restrict-template-expressions": [
         "error",
         { allowNumber: true },
       ],
+      "@typescript-eslint/switch-exhaustiveness-check": "error",
+
+      // general best practices
       "no-console": ["error", { allow: ["warn", "error"] }],
       "no-debugger": "error",
       "no-alert": "error",
       "no-eval": "error",
-      "no-implied-eval": "off", // ts version below
-      "@typescript-eslint/no-implied-eval": "error",
       eqeqeq: ["error", "always"],
-      "no-var": "error",
-      "prefer-const": "error",
       "prefer-template": "error",
       "prefer-arrow-callback": "error",
       "no-param-reassign": "error",
-      "no-throw-literal": "off", // ts version below
-      "@typescript-eslint/only-throw-error": "error",
       "no-return-assign": ["error", "always"],
       "no-self-compare": "error",
       "no-template-curly-in-string": "error",
@@ -86,19 +73,8 @@ export default defineConfig([
       "no-useless-rename": "error",
       "object-shorthand": "error",
       "prefer-destructuring": ["error", { object: true, array: false }],
-      "prefer-spread": "error",
-      "prefer-rest-params": "error",
 
-      "svelte/no-useless-mustaches": "error",
-      "svelte/require-each-key": "error",
-      "svelte/no-at-html-tags": "error",
-      "svelte/no-target-blank": "error",
-      "svelte/no-reactive-reassign": "error",
-      "svelte/require-event-dispatcher-types": "error",
-      "svelte/button-has-type": "error",
-      "svelte/no-dom-manipulating": "error",
-      "svelte/no-store-async": "error",
-      "svelte/require-stores-init": "error",
+      // svelte additions not covered by recommended
       "svelte/prefer-class-directive": "error",
       "svelte/prefer-style-directive": "error",
       "svelte/shorthand-attribute": "error",
