@@ -18,12 +18,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-/** Firebase Realtime Database instance. */
 export const database = getDatabase(app);
 
-/** Firebase Analytics instance, null during static site generation. */
 export const analytics: Analytics | null = browser ? getAnalytics(app) : null;
-/** Database reference to the countdown start timestamp. */
+
 export const countdownRef: DatabaseReference = ref(database, "countdown");
-/** Database reference to the participant entries. */
 export const participantsRef: DatabaseReference = ref(database, "participants");

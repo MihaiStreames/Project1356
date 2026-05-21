@@ -32,7 +32,8 @@
         snap.forEach((childSnap: DataSnapshot): void => {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const val: Joiner | null = childSnap.val();
-          if (val !== null && typeof val.joinedAt === "number") entries.push(val);
+          if (val !== null && typeof val.joinedAt === "number")
+            entries.push(val);
         });
 
         entries.sort((a, b) => b.joinedAt - a.joinedAt);

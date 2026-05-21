@@ -1,7 +1,3 @@
-<!--
-@component
-Scrollable list of recent joiners with a header showing total count.
--->
 <script lang="ts">
   import type { Joiner } from "$lib/types";
   import { formatDate } from "$lib/utils";
@@ -10,9 +6,7 @@ Scrollable list of recent joiners with a header showing total count.
     count,
     joiners,
   }: {
-    /** Pre-formatted count label, e.g. "42 joined". */
     count: string;
-    /** Sorted list of joiners, most recent first. */
     joiners: Joiner[];
   } = $props();
 </script>
@@ -28,7 +22,9 @@ Scrollable list of recent joiners with a header showing total count.
     {:else}
       {#each joiners as joiner (`${joiner.joinedAt}-${joiner.name}`)}
         <li class="join-item join-item-animate">
-          <span class="join-name">{joiner.name !== "" ? joiner.name : "Anonymous"}</span>
+          <span class="join-name">
+            {joiner.name !== "" ? joiner.name : "Anonymous"}
+          </span>
           <span class="join-time">{formatDate(joiner.joinedAt)}</span>
         </li>
       {/each}

@@ -42,8 +42,10 @@
     --input-focus-ring: color-mix(in srgb, var(--accent) 15%, transparent);
     --input-focus-bg: rgba(0, 0, 0, 0.4);
     --submit-ink: #02130d;
-    --submit-shadow: 0 10px 20px color-mix(in srgb, var(--accent-2) 25%, transparent);
-    --submit-shadow-hover: 0 12px 26px color-mix(in srgb, var(--accent-2) 35%, transparent);
+    --submit-shadow: 0 10px 20px
+      color-mix(in srgb, var(--accent-2) 25%, transparent);
+    --submit-shadow-hover: 0 12px 26px
+      color-mix(in srgb, var(--accent-2) 35%, transparent);
 
     display: grid;
     grid-template-columns: 1fr auto;

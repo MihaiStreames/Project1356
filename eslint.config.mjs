@@ -24,7 +24,7 @@ export default defineConfig([
       },
       parserOptions: {
         projectService: {
-          allowDefaultProject: ["*.config.js", "*.config.ts"],
+          allowDefaultProject: ["*.config.js"],
         },
         tsconfigRootDir: import.meta.dirname,
         extraFileExtensions: [".svelte"],
@@ -36,8 +36,6 @@ export default defineConfig([
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
-      "@typescript-eslint/explicit-function-return-type": "error",
-      "@typescript-eslint/explicit-module-boundary-types": "error",
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-inferrable-types": "error",
       "@typescript-eslint/consistent-type-imports": "error",
@@ -61,19 +59,10 @@ export default defineConfig([
       "@typescript-eslint/no-non-null-assertion": "error",
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
       "@typescript-eslint/switch-exhaustiveness-check": "error",
-      "@typescript-eslint/restrict-template-expressions": ["error", { allowNumber: true }],
-      "@typescript-eslint/naming-convention": [
+      "@typescript-eslint/restrict-template-expressions": [
         "error",
-        { selector: "typeLike", format: ["PascalCase"] },
-        {
-          selector: "variable",
-          format: ["camelCase", "UPPER_CASE"],
-          leadingUnderscore: "allow",
-        },
-        { selector: "function", format: ["camelCase"] },
-        { selector: "parameter", format: ["camelCase"], leadingUnderscore: "allow" },
+        { allowNumber: true },
       ],
-
       "no-console": ["error", { allow: ["warn", "error"] }],
       "no-debugger": "error",
       "no-alert": "error",
@@ -116,7 +105,10 @@ export default defineConfig([
       "svelte/shorthand-directive": "error",
       "svelte/sort-attributes": "error",
       "svelte/spaced-html-comment": "error",
-      "svelte/no-unused-class-name": ["error", { allowedClassNames: ["panel"] }],
+      "svelte/no-unused-class-name": [
+        "error",
+        { allowedClassNames: ["panel"] },
+      ],
     },
   },
   {
@@ -129,15 +121,6 @@ export default defineConfig([
     },
   },
   {
-    // config files are plain JS/TS without full type info
-    files: ["*.config.js", "*.config.ts"],
-    extends: [ts.configs.disableTypeChecked],
-    rules: {
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/explicit-module-boundary-types": "off",
-    },
-  },
-  {
-    ignores: [".svelte-kit/", "build/", "node_modules/", "src/posts/"],
+    ignores: [".svelte-kit/", "build/", "node_modules/"],
   },
 ]);

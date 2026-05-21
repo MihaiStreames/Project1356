@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Space+Grotesk:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+
+      body {
+        font-family: "Space Grotesk", "Segoe UI", sans-serif;
+        background: linear-gradient(160deg, #0b0c15, #11131f);
+        color: #f5f3ef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            circle at 20% 20%,
+            rgba(255, 209, 102, 0.1),
+            transparent 45%
+          ),
+          radial-gradient(
+            circle at 80% 0%,
+            rgba(6, 214, 160, 0.12),
+            transparent 40%
+          );
+        z-index: 0;
+      }
+
+      body::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        background-size: 80px 80px;
+        opacity: 0.2;
+        z-index: 0;
+      }
+
+      .orb-one {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.5;
+        top: -100px;
+        left: -40px;
+        background: rgba(255, 209, 102, 0.4);
+        z-index: 0;
+      }
+
+      .orb-two {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.45;
+        bottom: -150px;
+        right: -40px;
+        background: rgba(6, 214, 160, 0.35);
+        z-index: 0;
+      }
+
+      .content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .eyebrow {
+        font-family: "Share Tech Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.4em;
+        font-size: 1rem;
+        color: rgba(245, 243, 239, 0.6);
+      }
+
+      h1 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 5rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      .description {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 1.4rem;
+        color: rgba(245, 243, 239, 0.7);
+        max-width: 700px;
+        line-height: 1.5;
+      }
+
+      .accent-bar {
+        width: 120px;
+        height: 4px;
+        background: linear-gradient(90deg, #ffd166, #ef476f);
+        border-radius: 999px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="orb-one"></div>
+    <div class="orb-two"></div>
+    <div class="content">
+      <p class="eyebrow">Global Countdown</p>
+      <h1>Project 1356</h1>
+      <div class="accent-bar"></div>
+      <p class="description">
+        1,356 days. 6 life-changing goals. Join the movement.
+      </p>
+    </div>
+  </body>
+</html>

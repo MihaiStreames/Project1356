@@ -14,8 +14,10 @@
     href="https://github.com/MihaiStreames/Project1356"
     onclick={handleFooterClick}
     rel="noopener noreferrer"
-    target="_blank">MihaiStreames - 2026</a
+    target="_blank"
   >
+    MihaiStreames - 2026
+  </a>
 </footer>
 
 <style>

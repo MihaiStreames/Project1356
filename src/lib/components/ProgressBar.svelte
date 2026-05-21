@@ -1,18 +1,11 @@
-<!--
-@component
-Horizontal progress bar with status label and formatted count/text readout.
--->
 <script lang="ts">
   const {
     progress,
     status,
     text,
   }: {
-    /** Fill ratio in the 0-1 range; bar scales along the X axis. */
     progress: number;
-    /** Short status label shown on the left of the meta row. */
     status: string;
-    /** Pre-formatted count or percentage shown on the right. */
     text: string;
   } = $props();
 </script>

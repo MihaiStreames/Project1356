@@ -26,7 +26,6 @@
   let rafId: number | undefined;
   let unsubCountdown: Unsubscribe | undefined;
 
-  /** Recompute remaining time and progress from the cached start timestamp. */
   function tick(): void {
     const startTimestamp = cachedStartTimestamp;
     if (startTimestamp === null) {
@@ -123,8 +122,14 @@
     content="1,356 days. 6 life-changing goals. Join the global countdown and commit to transforming your life."
     property="og:description"
   />
-  <meta content="https://mihaistreames.github.io/Project1356/" property="og:url" />
-  <meta content="https://mihaistreames.github.io/Project1356/og-image.png" property="og:image" />
+  <meta
+    content="https://mihaistreames.github.io/Project1356/"
+    property="og:url"
+  />
+  <meta
+    content="https://mihaistreames.github.io/Project1356/og-image.png"
+    property="og:image"
+  />
   <meta content="1200" property="og:image:width" />
   <meta content="630" property="og:image:height" />
   <meta content="Project 1356" property="og:site_name" />
@@ -136,7 +141,10 @@
     name="twitter:description"
     content="1,356 days. 6 life-changing goals. Join the global countdown."
   />
-  <meta name="twitter:image" content="https://mihaistreames.github.io/Project1356/og-image.png" />
+  <meta
+    name="twitter:image"
+    content="https://mihaistreames.github.io/Project1356/og-image.png"
+  />
 
   <!-- discord uses OG tags primarily, theme-color helps with embed accent -->
   <meta name="theme-color" content="#ffd166" />

@@ -32,7 +32,5 @@ Live at [mihaistreames.github.io/Project1356](https://mihaistreames.github.io/Pr
 MIT. See [LICENSE](LICENSE).
 
 <div align="center">
-
-Made with ❤️
-
+  Made with ❤️
 </div>

@@ -3,24 +3,33 @@ name: Start Countdown
 on:
   workflow_dispatch:
 
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
   start-countdown:
+    name: Start Countdown
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
-      - name: Setup Node
-        uses: actions/setup-node@v6
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          node-version: 20
+          bun-version: latest
+          no-cache: true
 
       - name: Install Firebase Admin
-        run: npm install firebase-admin@12
+        run: bun add firebase-admin@12
 
       - name: Start countdown in RTDB
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
         run: |
-          node <<'NODE'
+          cat > /tmp/countdown.js << 'EOF'
           const admin = require("firebase-admin");
 
           if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
@@ -60,4 +69,5 @@ jobs:
             console.log("Countdown started:", new Date(now).toISOString());
             process.exit(0);
           });
-          NODE
+          EOF
+          bun /tmp/countdown.js
