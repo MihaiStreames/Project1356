@@ -6,19 +6,17 @@ A community countdown website where participants commit to 6 life-changing goals
 [![Deploy](https://github.com/MihaiStreames/Project1356/actions/workflows/deploy.yml/badge.svg)](https://github.com/MihaiStreames/Project1356/actions/workflows/deploy.yml)
 [![License](https://img.shields.io/github/license/MihaiStreames/Project1356)](LICENSE)
 
-Licensed under MIT.
-
 ## About
 
-Project 1356 is an [Instagram thing](https://www.instagram.com/project.1356/). I missed part 1 and did not want to miss part 2, so I built a site for it, quickly.
+Project 1356 is an [Instagram thing](https://www.instagram.com/project.1356). I missed part 1 and did not want to miss part 2, so I built a site for it, quickly.
 
 I originally did it raw (pure HTML, JS, and CSS). GitHub Pages meant no backend server, so I wired it up to Firebase for storage and auth: my first time using it, picked it because it was free and it slotted straight into a static site.
 
-Later I rewrote the whole thing on SvelteKit, as a training project.
+Later I rewrote the whole thing using SvelteKit, as a training project.
 
 Shame the guy who runs the Instagram account never showed the site to anyone, so it mostly ended up as a personal countdown with a community shape (shoutout to my friends who joined!).
 
-Live at [mihaistreames.github.io/Project1356](https://mihaistreames.github.io/Project1356/). Part 2 started January 7th, 2026.
+Live at [mihaistreames.github.io/Project1356](https://mihaistreames.github.io/Project1356).
 
 ## The Rules
 
